@@ -19,9 +19,6 @@ dependencies:
   flutter:
     sdk: flutter
   mapsindoors_platform_interface: ^2.1.0
-dependency_overrides:
-  mapsindoors_platform_interface:
-    path: ../../misdkfl-platform
 
 dev_dependencies:
   flutter_test:
