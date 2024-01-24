@@ -35,9 +35,8 @@ class FLNativeViewFactory: NSObject, FlutterPlatformViewFactory {
 
 class FLNativeView: NSObject, FlutterPlatformView, MPMapControlDelegate, FlutterMapView {
     
-    private var _GMSView: GMSMapView?
-    private let MP_APIKEY = "mapspeople"
-    private var mapsIndoorsData: MapsIndoorsData? = nil
+    private var _GMSView: GMSMapView
+    private var mapsIndoorsData: MapsIndoorsData
     private var args: Any? = nil
     private let googleApiKey = Bundle.main.object(forInfoDictionaryKey: "GoogleMapsAPIKey") as? String ?? ""
 
@@ -47,15 +46,14 @@ class FLNativeView: NSObject, FlutterPlatformView, MPMapControlDelegate, Flutter
         binaryMessenger messenger: FlutterBinaryMessenger?,
         mapsIndoorsData: MapsIndoorsData
     ) {
-        super.init()
-
         self.args = args
         self.mapsIndoorsData = mapsIndoorsData;
         GMSServices.provideAPIKey(googleApiKey)
         _GMSView = GMSMapView(frame: frame, camera: GMSCameraPosition())
+        super.init()
 
         if (MPMapsIndoors.shared.ready) {
-            mapsIndoorsData.mapControlMethodChannel?.invokeMethod("create", arguments: args)
+            mapsIndoorsIsReady()
         }else {
             mapsIndoorsData.delegate.append(MIReadyDelegate(view: self))
         }
@@ -63,29 +61,25 @@ class FLNativeView: NSObject, FlutterPlatformView, MPMapControlDelegate, Flutter
         mapsIndoorsData.mapView = self
         // To fix an odd bug, where the map center would be in the top left corner of the view.
         // It should be the center of the view.
-        _GMSView?.moveCamera(GMSCameraUpdate.setCamera(GMSCameraPosition()))
+        _GMSView.moveCamera(GMSCameraUpdate.setCamera(GMSCameraPosition()))
     }
 
     func view() -> UIView {
-        return _GMSView!
+        return _GMSView
     }
     
     func mapsIndoorsIsReady() {
-        if (mapsIndoorsData?.mapView != nil) {
-            DispatchQueue.main.async { [self] in
-                let config = MPMapConfig(gmsMapView: _GMSView!, googleApiKey: googleApiKey)
-                let mapControl = MPMapsIndoors.createMapControl(mapConfig: config)
-                if (mapControl != nil) {
-                    //TODO: parse config
-                    mapControl?.showUserPosition = true
-                    //pretend config^
-                    mapsIndoorsData!.mapControl = mapControl
-                    mapsIndoorsData?.directionsRenderer = nil
-                    Task {
-                        //Momentary code just to get the map to a place where we show data on the map
-                        mapControl?.goTo(entity: await MPMapsIndoors.shared.venues()[0])
-                    }
-                }
+        guard mapsIndoorsData.mapView != nil else { return }
+        
+        DispatchQueue.main.async { [self] in
+            let config = MPMapConfig(gmsMapView: _GMSView, googleApiKey: googleApiKey)
+            if let mapControl = MPMapsIndoors.createMapControl(mapConfig: config) {
+                //TODO: parse config
+                mapControl.showUserPosition = true
+                //pretend config^
+                mapsIndoorsData.mapControl = mapControl
+                mapsIndoorsData.directionsRenderer = nil
+                mapsIndoorsData.mapControlMethodChannel?.invokeMethod("create", arguments: nil)
             }
         }
     }
@@ -94,14 +88,14 @@ class FLNativeView: NSObject, FlutterPlatformView, MPMapControlDelegate, Flutter
         guard let update = makeGMSCameraUpdate(cameraUpdate: cameraUpdate) else {
             throw MPError.unknownError
         }
-        _GMSView?.animate(with: update)
+        _GMSView.animate(with: update)
     }
     
     func moveCamera(cameraUpdate: CameraUpdate) throws {
         guard let update = makeGMSCameraUpdate(cameraUpdate: cameraUpdate) else {
             throw MPError.unknownError
         }
-        _GMSView?.moveCamera(update)
+        _GMSView.moveCamera(update)
     }
     
     func makeGMSCameraUpdate(cameraUpdate: CameraUpdate) -> GMSCameraUpdate? {

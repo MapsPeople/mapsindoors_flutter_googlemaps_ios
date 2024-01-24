@@ -20,81 +20,44 @@ protocol LiveDataDelegate: AnyObject {
 }
 
 public class MapsIndoorsData: NSObject {
-    
-    private var _mapView: FlutterMapView? = nil
-    private var _mapControl: MPMapControl? = nil
-    private var _mapControlMethodChannel: FlutterMethodChannel? = nil
-    private var _mapControlFloorSelector: FlutterMethodChannel? = nil
-    private var _mapsIndoorsMethodChannel: FlutterMethodChannel? = nil
-    private var _directionsRendererMethodChannel: FlutterMethodChannel? = nil
-    private var _positionProvider: FlutterPositionProvider? = nil
-    private var _directionsRenderer: MPDirectionsRenderer? = nil
-    private var _floorSelector: CustomFloorSelector? = nil
-    
+
     var delegate: [MapsIndoorsReadyDelegate] = []
     
     var liveDataDelegate: LiveDataDelegate?
     
     var mapControlListenerDelegate: MapControlDelegate?
     
-    var mapView: FlutterMapView? {
-        set { _mapView = newValue }
-        get { return _mapView }
-    }
+    var mapView: FlutterMapView?
 
-    var mapControl: MPMapControl? {
-        set { _mapControl = newValue }
-        get { return _mapControl }
-    }
+    var mapControl: MPMapControl?
     
     var isMapControlInitialized: Bool {
-        get { return _mapControl == nil }
+        get { mapControl != nil }
     }
     
     var isMapsIndoorsReady: Bool {
-        get { return MPMapsIndoors.shared.ready }
+        get { MPMapsIndoors.shared.ready }
     }
     
     func mapsIndoorsReady(error: MPError?) {
-        delegate.forEach { onReady in
-            onReady.isReady(error: error)
+        delegate.forEach {
+            $0.isReady(error: error)
         }
     }
     
-    var mapControlMethodChannel: FlutterMethodChannel? {
-        set { _mapControlMethodChannel = newValue }
-        get { return _mapControlMethodChannel }
-    }
+    var mapControlMethodChannel: FlutterMethodChannel?
     
-    var directionsRendererMethodChannel: FlutterMethodChannel? {
-        set { _directionsRendererMethodChannel = newValue }
-        get { return _directionsRendererMethodChannel }
-    }
+    var directionsRendererMethodChannel: FlutterMethodChannel?
 
-    var mapsIndoorsMethodChannel: FlutterMethodChannel? {
-        set { _mapsIndoorsMethodChannel = newValue }
-        get { return _mapsIndoorsMethodChannel }
-    }
+    var mapsIndoorsMethodChannel: FlutterMethodChannel?
     
-    var mapControlFloorSelector: FlutterMethodChannel? {
-        set { _mapControlFloorSelector = newValue }
-        get { return _mapControlFloorSelector }
-    }
+    var mapControlFloorSelector: FlutterMethodChannel?
     
-    var positionProvider: FlutterPositionProvider? {
-        set { _positionProvider = newValue }
-        get { return _positionProvider }
-    }
+    var positionProvider: FlutterPositionProvider?
     
-    var directionsRenderer: MPDirectionsRenderer? {
-        set { _directionsRenderer = newValue }
-        get { return _directionsRenderer }
-    }
+    var directionsRenderer: MPDirectionsRenderer?
     
-    var floorSelector: MPCustomFloorSelector? {
-        set { _floorSelector = newValue as? CustomFloorSelector }
-        get { return _floorSelector }
-    }
+    var floorSelector: MPCustomFloorSelector?
 }
 
 public class CustomFloorSelector: UIView, MPCustomFloorSelector {
