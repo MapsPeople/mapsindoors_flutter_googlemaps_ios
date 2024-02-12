@@ -51,14 +51,14 @@ class FLNativeView: NSObject, FlutterPlatformView, MPMapControlDelegate, Flutter
         GMSServices.provideAPIKey(googleApiKey)
         _GMSView = GMSMapView(frame: frame, camera: GMSCameraPosition())
         super.init()
+        mapsIndoorsData.mapView = self
 
         if (MPMapsIndoors.shared.ready) {
             mapsIndoorsIsReady()
-        }else {
+        } else {
             mapsIndoorsData.delegate.append(MIReadyDelegate(view: self))
         }
         
-        mapsIndoorsData.mapView = self
         // To fix an odd bug, where the map center would be in the top left corner of the view.
         // It should be the center of the view.
         _GMSView.moveCamera(GMSCameraUpdate.setCamera(GMSCameraPosition()))
