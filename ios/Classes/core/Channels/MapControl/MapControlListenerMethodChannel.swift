@@ -110,10 +110,7 @@ public class MapControlListenerMethodChannel: NSObject {
                 return
             }
             
-            guard let consumeEvent = arguments?["consumeEvent"] as? Bool else {
-                result(FlutterError(code: "Missing parameter to set listener", message: "MPL_locationSelectedListener", details: nil))
-                return
-            }
+            let consumeEvent = arguments?["consumeEvent"] as? Bool ?? false
             
             mapsIndoorsData.mapControlListenerDelegate?.respondToDidChangeLocation = setupListener
             mapsIndoorsData.mapControlListenerDelegate?.consumeChangeLocation = consumeEvent
@@ -125,10 +122,7 @@ public class MapControlListenerMethodChannel: NSObject {
                 return
             }
             
-            guard let consumeEvent = arguments?["consumeEvent"] as? Bool else {
-                result(FlutterError(code: "Missing parameter to set listener", message: "MPL_mapClickListener", details: nil))
-                return
-            }
+            let consumeEvent = arguments?["consumeEvent"] as? Bool ?? false
             
             mapsIndoorsData.mapControlListenerDelegate?.respondToTap = setupListener
             mapsIndoorsData.mapControlListenerDelegate?.consumeTap = consumeEvent
@@ -140,10 +134,7 @@ public class MapControlListenerMethodChannel: NSObject {
                 return
             }
             
-            guard let consumeEvent = arguments?["consumeEvent"] as? Bool else {
-                result(FlutterError(code: "Missing parameter to set listener", message: "MPL_markerClickListener", details: nil))
-                return
-            }
+            let consumeEvent = arguments?["consumeEvent"] as? Bool ?? false
             
             mapsIndoorsData.mapControlListenerDelegate?.respondToTapIcon = setupListener
             mapsIndoorsData.mapControlListenerDelegate?.consumeTapIcon = consumeEvent
