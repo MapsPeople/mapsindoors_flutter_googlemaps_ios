@@ -47,6 +47,10 @@ public class MapsIndoorsMethodChannel: NSObject {
         case MIN_reverseGeoCode
         case MIN_setPositionProvider
         case MIN_getDefaultVenue
+        case MIN_loadWithVenues
+        case MIN_getSyncedVenues
+        case MIN_addVenuesToSync
+        case MIN_removeVenuesToSync
         
         func call(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
             let runner: (_ arguments: [String: Any]?, _ mapsIndoorsData: MapsIndoorsData, _ result: @escaping FlutterResult) -> Void
@@ -83,6 +87,10 @@ public class MapsIndoorsMethodChannel: NSObject {
             case .MIN_reverseGeoCode:               runner = reverseGeoCode
             case .MIN_setPositionProvider:          runner = setPositionProvider
             case .MIN_getDefaultVenue:              runner = getDefaultVenue
+            case .MIN_loadWithVenues:               runner = loadWithVenues
+            case .MIN_getSyncedVenues:              runner = getSyncedVenues
+            case .MIN_addVenuesToSync:              runner = addVenuesToSync
+            case .MIN_removeVenuesToSync:           runner = removeVenuesToSync
             }
             
             runner(arguments, mapsIndoorsData, result)
@@ -255,10 +263,10 @@ public class MapsIndoorsMethodChannel: NSObject {
                 let filter = MPFilter()
                 
                 let locations = await MPMapsIndoors.shared.locationsWith(query: query, filter: filter);
-                let locationsCodable = locations.map {MPLocationCodable(withLocation: $0) }
+                let locationsCodable = locations.map { MPLocationCodable(withLocation: $0) }
                 
                 let jsonData = try JSONEncoder().encode(locationsCodable)
-                let resultJson = String(data: jsonData, encoding: String.Encoding.utf8)
+                let resultJson = String(data: jsonData, encoding: .utf8)
                 
                 result(resultJson);
             }
@@ -479,6 +487,64 @@ public class MapsIndoorsMethodChannel: NSObject {
                 }
                 let jsonData = try! JSONEncoder().encode( MPVenueCodable(withVenue: defaultVenue) )
                 result(String(data: jsonData, encoding: String.Encoding.utf8));
+            }
+        }
+        
+        func loadWithVenues(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let apiKey = arguments?["key"] as? String else {
+                result(FlutterError(code: "Could not initialise MapsIndoors", message: Methods.MIN_removeVenuesToSync.rawValue, details: nil))
+                return
+            }
+            guard let venueIds = arguments?["venueIds"] as? [String] else {
+                result(FlutterError(code: "Could not read arguments", message: Methods.MIN_addVenuesToSync.rawValue, details: nil))
+                return
+            }
+            
+            Task {
+                do {
+                    try await MPMapsIndoors.shared.load(apiKey: apiKey, venueIds: venueIds)
+                    mapsIndoorsData.mapsIndoorsReady(error: nil)
+                    result(nil)
+                } catch {
+                    result(error.localizedDescription)
+                }
+            }
+        }
+        
+        func getSyncedVenues(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            let venues = MPMapsIndoors.shared.venuesToSync
+            result(venues);
+        }
+        
+        func addVenuesToSync(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let venuesToAdd = arguments?["venueIds"] as? [String] else {
+                result(FlutterError(code: "Could not read arguments", message: Methods.MIN_addVenuesToSync.rawValue, details: nil))
+                return
+            }
+
+            Task {
+                do {
+                    try await MPMapsIndoors.shared.addVenuesToSync(venueIds: venuesToAdd)
+                    result(nil)
+                } catch {
+                    result(error.localizedDescription)
+                }
+            }
+        }
+        
+        func removeVenuesToSync(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let venuesToRemove = arguments?["venueIds"] as? [String] else {
+                result(FlutterError(code: "Could not read arguments", message: Methods.MIN_removeVenuesToSync.rawValue, details: nil))
+                return
+            }
+
+            Task {
+                do {
+                    try await MPMapsIndoors.shared.removeVenuesToSync(venueIds: venuesToRemove)
+                    result(nil)
+                } catch {
+                    result(error.localizedDescription)
+                }
             }
         }
     }

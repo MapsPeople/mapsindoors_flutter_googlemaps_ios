@@ -84,7 +84,7 @@ public class CustomFloorSelector: UIView, MPCustomFloorSelector {
     
     public func onShow() {
         if (building != nil) {
-            var floors = building?.floors?.values.map {MPFloorCodable(withFloor: $0)}
+            let floors = building?.floors?.values.map {MPFloorCodable(withFloor: $0)}
             let jsonData = try! JSONEncoder().encode(floors)
             let resultJson = String(data: jsonData, encoding: String.Encoding.utf8)
             

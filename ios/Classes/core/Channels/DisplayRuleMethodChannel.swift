@@ -5,85 +5,144 @@
 //  Created by Martin Hansen on 21/02/2023.
 //
 
-import Foundation
 import Flutter
-import UIKit
+import Foundation
 import MapsIndoors
-import MapsIndoorsCore
 import MapsIndoorsCodable
+import MapsIndoorsCore
+import UIKit
 
 public class DisplayRuleMethodChannel: NSObject {
-    
     enum Methods: String {
-        case DRU_isVisible
-        case DRU_setVisible
+        case DRU_getBadgeFillColor
+        case DRU_getBadgePosition
+        case DRU_getBadgeRadius
+        case DRU_getBadgeScale
+        case DRU_getBadgeStrokeColor
+        case DRU_getBadgeStrokeWidth
+        case DRU_getBadgeZoomFrom
+        case DRU_getBadgeZoomTo
+        case DRU_getExtrusionColor
+        case DRU_getExtrusionHeight
+        case DRU_getExtrusionLightnessFactor
+        case DRU_getExtrusionZoomFrom
+        case DRU_getExtrusionZoomTo
+        case DRU_getIconPlacement
         case DRU_getIconSize
         case DRU_getIconUrl
         case DRU_getLabel
         case DRU_getLabelMaxWidth
+        case DRU_getLabelStyleBearing
+        case DRU_getLabelStyleGraphic
+        case DRU_getLabelStyleHaloBlur
+        case DRU_getLabelStyleHaloColor
+        case DRU_getLabelStyleHaloWidth
+        case DRU_getLabelStyleTextColor
+        case DRU_getLabelStyleTextOpacity
+        case DRU_getLabelStyleTextSize
+        case DRU_getLabelType
         case DRU_getLabelZoomFrom
         case DRU_getLabelZoomTo
         case DRU_getModel2DBearing
         case DRU_getModel2DHeightMeters
         case DRU_getModel2DModel
-        case DRU_getModel2DZoomTo
         case DRU_getModel2DWidthMeters
         case DRU_getModel2DZoomFrom
+        case DRU_getModel2DZoomTo
+        case DRU_getModel3DModel
+        case DRU_getModel3DRotationX
+        case DRU_getModel3DRotationY
+        case DRU_getModel3DRotationZ
+        case DRU_getModel3DScale
+        case DRU_getModel3DZoomFrom
+        case DRU_getModel3DZoomTo
         case DRU_getPolygonFillColor
         case DRU_getPolygonFillOpacity
-        case DRU_getPolygonZoomTo
+        case DRU_getPolygonLightnessFactor
         case DRU_getPolygonStrokeColor
         case DRU_getPolygonStrokeOpacity
         case DRU_getPolygonStrokeWidth
         case DRU_getPolygonZoomFrom
+        case DRU_getPolygonZoomTo
+        case DRU_getWallColor
+        case DRU_getWallHeight
+        case DRU_getWallLightnessFactor
+        case DRU_getWallZoomFrom
+        case DRU_getWallZoomTo
         case DRU_getZoomFrom
         case DRU_getZoomTo
+        case DRU_isBadgeVisible
+        case DRU_isExtrusionVisible
         case DRU_isIconVisible
         case DRU_isLabelVisible
         case DRU_isModel2DVisible
+        case DRU_isModel3DVisible
         case DRU_isPolygonVisible
         case DRU_isValid
+        case DRU_isVisible
+        case DRU_isWallVisible
         case DRU_reset
+        case DRU_setBadgeFillColor
+        case DRU_setBadgePosition
+        case DRU_setBadgeRadius
+        case DRU_setBadgeScale
+        case DRU_setBadgeStrokeColor
+        case DRU_setBadgeStrokeWidth
+        case DRU_setBadgeVisible
+        case DRU_setBadgeZoomFrom
+        case DRU_setBadgeZoomTo
+        case DRU_setExtrusionColor
+        case DRU_setExtrusionHeight
+        case DRU_setExtrusionLightnessFactor
+        case DRU_setExtrusionVisible
+        case DRU_setExtrusionZoomFrom
+        case DRU_setExtrusionZoomTo
         case DRU_setIcon
-        case DRU_setIconVisible
+        case DRU_setIconPlacement
         case DRU_setIconSize
+        case DRU_setIconVisible
         case DRU_setLabel
         case DRU_setLabelMaxWidth
+        case DRU_setLabelStyleBearing
+        case DRU_setLabelStyleGraphic
+        case DRU_setLabelStyleHaloBlur
+        case DRU_setLabelStyleHaloColor
+        case DRU_setLabelStyleHaloWidth
+        case DRU_setLabelStyleTextColor
+        case DRU_setLabelStyleTextOpacity
+        case DRU_setLabelStyleTextSize
+        case DRU_setLabelType
         case DRU_setLabelVisible
         case DRU_setLabelZoomFrom
         case DRU_setLabelZoomTo
         case DRU_setModel2DBearing
-        case DRU_setModel2DModel
         case DRU_setModel2DHeightMeters
+        case DRU_setModel2DModel
         case DRU_setModel2DVisible
         case DRU_setModel2DWidthMeters
         case DRU_setModel2DZoomFrom
         case DRU_setModel2DZoomTo
+        case DRU_setModel3DModel
+        case DRU_setModel3DRotationX
+        case DRU_setModel3DRotationY
+        case DRU_setModel3DRotationZ
+        case DRU_setModel3DScale
+        case DRU_setModel3DVisible
+        case DRU_setModel3DZoomFrom
+        case DRU_setModel3DZoomTo
         case DRU_setPolygonFillColor
         case DRU_setPolygonFillOpacity
+        case DRU_setPolygonLightnessFactor
         case DRU_setPolygonStrokeColor
         case DRU_setPolygonStrokeOpacity
         case DRU_setPolygonStrokeWidth
         case DRU_setPolygonVisible
         case DRU_setPolygonZoomFrom
         case DRU_setPolygonZoomTo
-        case DRU_getExtrusionColor
-        case DRU_getExtrusionHeight
-        case DRU_getExtrusionZoomFrom
-        case DRU_getExtrusionZoomTo
-        case DRU_getWallColor
-        case DRU_getWallHeight
-        case DRU_getWallZoomFrom
-        case DRU_getWallZoomTo
-        case DRU_isExtrusionVisible
-        case DRU_isWallVisible
-        case DRU_setExtrusionColor
-        case DRU_setExtrusionHeight
-        case DRU_setExtrusionVisible
-        case DRU_setExtrusionZoomFrom
-        case DRU_setExtrusionZoomTo
+        case DRU_setVisible
         case DRU_setWallColor
         case DRU_setWallHeight
+        case DRU_setWallLightnessFactor
         case DRU_setWallVisible
         case DRU_setWallZoomFrom
         case DRU_setWallZoomTo
@@ -92,95 +151,154 @@ public class DisplayRuleMethodChannel: NSObject {
         
         func call(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
             let runner: (_ arguments: [String: Any]?, _ mapsIndoorsData: MapsIndoorsData, _ result: @escaping FlutterResult) -> Void
-
+            
             switch self {
-            case .DRU_isVisible:                    runner = isVisible
-            case .DRU_setVisible:                   runner = setVisible
-            case .DRU_getIconSize:                  runner = getIconSize
-            case .DRU_getIconUrl:                   runner = getIconUrl
-            case .DRU_getLabel:                     runner = getLabel
-            case .DRU_getLabelMaxWidth:             runner = getLabelMaxWidth
-            case .DRU_getLabelZoomFrom:             runner = getLabelZoomFrom
-            case .DRU_getLabelZoomTo:               runner = getLabelZoomTo
-            case .DRU_getModel2DBearing:            runner = getModel2DBearing
-            case .DRU_getModel2DHeightMeters:       runner = getModel2DHeightMeters
-            case .DRU_getModel2DModel:              runner = getModel2DModel
-            case .DRU_getModel2DZoomTo:             runner = getModel2DZoomTo
-            case .DRU_getModel2DWidthMeters:        runner = getModel2DWidthMeters
-            case .DRU_getModel2DZoomFrom:           runner = getModel2DZoomFrom
-            case .DRU_getPolygonFillColor:          runner = getPolygonFillColor
-            case .DRU_getPolygonFillOpacity:        runner = getPolygonFillOpacity
-            case .DRU_getPolygonZoomTo:             runner = getPolygonZoomTo
-            case .DRU_getPolygonStrokeColor:        runner = getPolygonStrokeColor
-            case .DRU_getPolygonStrokeOpacity:      runner = getPolygonStrokeOpacity
-            case .DRU_getPolygonStrokeWidth:        runner = getPolygonStrokeWidth
-            case .DRU_getPolygonZoomFrom:           runner = getPolygonZoomFrom
-            case .DRU_getZoomFrom:                  runner = getZoomFrom
-            case .DRU_getZoomTo:                    runner = getZoomTo
-            case .DRU_isIconVisible:                runner = isIconVisible
-            case .DRU_isLabelVisible:               runner = isLabelVisible
-            case .DRU_isModel2DVisible:             runner = isModel2DVisible
-            case .DRU_isPolygonVisible:             runner = isPolygonVisible
-            case .DRU_isValid:                      runner = isValid
-            case .DRU_reset:                        runner = reset
-            case .DRU_setIcon:                      runner = setIcon
-            case .DRU_setIconVisible:               runner = setIconVisible
-            case .DRU_setIconSize:                  runner = setIconSize
-            case .DRU_setLabel:                     runner = setLabel
-            case .DRU_setLabelMaxWidth:             runner = setLabelMaxWidth
-            case .DRU_setLabelVisible:              runner = setLabelVisible
-            case .DRU_setLabelZoomFrom:             runner = setLabelZoomFrom
-            case .DRU_setLabelZoomTo:               runner = setLabelZoomTo
-            case .DRU_setModel2DBearing:            runner = setModel2DBearing
-            case .DRU_setModel2DModel:              runner = setModel2DModel
-            case .DRU_setModel2DHeightMeters:       runner = setModel2DHeightMeters
-            case .DRU_setModel2DVisible:            runner = setModel2DVisible
-            case .DRU_setModel2DWidthMeters:        runner = setModel2DWidthMeters
-            case .DRU_setModel2DZoomFrom:           runner = setModel2DZoomFrom
-            case .DRU_setModel2DZoomTo:             runner = setModel2DZoomTo
-            case .DRU_setPolygonFillColor:          runner = setPolygonFillColor
-            case .DRU_setPolygonFillOpacity:        runner = setPolygonFillOpacity
-            case .DRU_setPolygonStrokeColor:        runner = setPolygonStrokeColor
-            case .DRU_setPolygonStrokeOpacity:      runner = setPolygonStrokeOpacity
-            case .DRU_setPolygonStrokeWidth:        runner = setPolygonStrokeWidth
-            case .DRU_setPolygonVisible:            runner = setPolygonVisible
-            case .DRU_setPolygonZoomFrom:           runner = setPolygonZoomFrom
-            case .DRU_setPolygonZoomTo:             runner = setPolygonZoomTo
-            case .DRU_getExtrusionColor:            runner = getExtrusionColor
-            case .DRU_getExtrusionHeight:           runner = getExtrusionHeight
-            case .DRU_getExtrusionZoomFrom:         runner = getExtrusionZoomFrom
-            case .DRU_getExtrusionZoomTo:           runner = getExtrusionZoomTo
-            case .DRU_getWallColor:                 runner = getWallColor
-            case .DRU_getWallHeight:                runner = getWallHeight
-            case .DRU_getWallZoomFrom:              runner = getWallZoomFrom
-            case .DRU_getWallZoomTo:                runner = getWallZoomTo
-            case .DRU_isExtrusionVisible:           runner = isExtrusionVisible
-            case .DRU_isWallVisible:                runner = isWallVisible
-            case .DRU_setExtrusionColor:            runner = setExtrusionColor
-            case .DRU_setExtrusionHeight:           runner = setExtrusionHeight
-            case .DRU_setExtrusionVisible:          runner = setExtrusionVisible
-            case .DRU_setExtrusionZoomFrom:         runner = setExtrusionZoomFrom
-            case .DRU_setExtrusionZoomTo:           runner = setExtrusionZoomTo
-            case .DRU_setWallColor:                 runner = setWallColor
-            case .DRU_setWallHeight:                runner = setWallHeight
-            case .DRU_setWallVisible:               runner = setWallVisible
-            case .DRU_setWallZoomFrom:              runner = setWallZoomFrom
-            case .DRU_setWallZoomTo:                runner = setWallZoomTo
-            case .DRU_setZoomFrom:                  runner = setZoomFrom
-            case .DRU_setZoomTo:                    runner = setZoomTo
+            case .DRU_getBadgeFillColor: runner = getBadgeFillColor
+            case .DRU_getBadgePosition: runner = getBadgePosition
+            case .DRU_getBadgeRadius: runner = getBadgeRadius
+            case .DRU_getBadgeScale: runner = getBadgeScale
+            case .DRU_getBadgeStrokeColor: runner = getBadgeStrokeColor
+            case .DRU_getBadgeStrokeWidth: runner = getBadgeStrokeWidth
+            case .DRU_getBadgeZoomFrom: runner = getBadgeZoomFrom
+            case .DRU_getBadgeZoomTo: runner = getBadgeZoomTo
+            case .DRU_getExtrusionColor: runner = getExtrusionColor
+            case .DRU_getExtrusionHeight: runner = getExtrusionHeight
+            case .DRU_getExtrusionLightnessFactor: runner = getExtrusionLightnessFactor
+            case .DRU_getExtrusionZoomFrom: runner = getExtrusionZoomFrom
+            case .DRU_getExtrusionZoomTo: runner = getExtrusionZoomTo
+            case .DRU_getIconPlacement: runner = getIconPlacement
+            case .DRU_getIconSize: runner = getIconSize
+            case .DRU_getIconUrl: runner = getIconUrl
+            case .DRU_getLabel: runner = getLabel
+            case .DRU_getLabelMaxWidth: runner = getLabelMaxWidth
+            case .DRU_getLabelStyleBearing: runner = getLabelStyleBearing
+            case .DRU_getLabelStyleGraphic: runner = getLabelStyleGraphic
+            case .DRU_getLabelStyleHaloBlur: runner = getLabelStyleHaloBlur
+            case .DRU_getLabelStyleHaloColor: runner = getLabelStyleHaloColor
+            case .DRU_getLabelStyleHaloWidth: runner = getLabelStyleHaloWidth
+            case .DRU_getLabelStyleTextColor: runner = getLabelStyleTextColor
+            case .DRU_getLabelStyleTextOpacity: runner = getLabelStyleTextOpacity
+            case .DRU_getLabelStyleTextSize: runner = getLabelStyleTextSize
+            case .DRU_getLabelType: runner = getLabelType
+            case .DRU_getLabelZoomFrom: runner = getLabelZoomFrom
+            case .DRU_getLabelZoomTo: runner = getLabelZoomTo
+            case .DRU_getModel2DBearing: runner = getModel2DBearing
+            case .DRU_getModel2DHeightMeters: runner = getModel2DHeightMeters
+            case .DRU_getModel2DModel: runner = getModel2DModel
+            case .DRU_getModel2DWidthMeters: runner = getModel2DWidthMeters
+            case .DRU_getModel2DZoomFrom: runner = getModel2DZoomFrom
+            case .DRU_getModel2DZoomTo: runner = getModel2DZoomTo
+            case .DRU_getModel3DModel: runner = getModel3DModel
+            case .DRU_getModel3DRotationX: runner = getModel3DRotationX
+            case .DRU_getModel3DRotationY: runner = getModel3DRotationY
+            case .DRU_getModel3DRotationZ: runner = getModel3DRotationZ
+            case .DRU_getModel3DScale: runner = getModel3DScale
+            case .DRU_getModel3DZoomFrom: runner = getModel3DZoomFrom
+            case .DRU_getModel3DZoomTo: runner = getModel3DZoomTo
+            case .DRU_getPolygonFillColor: runner = getPolygonFillColor
+            case .DRU_getPolygonFillOpacity: runner = getPolygonFillOpacity
+            case .DRU_getPolygonLightnessFactor: runner = getPolygonLightnessFactor
+            case .DRU_getPolygonStrokeColor: runner = getPolygonStrokeColor
+            case .DRU_getPolygonStrokeOpacity: runner = getPolygonStrokeOpacity
+            case .DRU_getPolygonStrokeWidth: runner = getPolygonStrokeWidth
+            case .DRU_getPolygonZoomFrom: runner = getPolygonZoomFrom
+            case .DRU_getPolygonZoomTo: runner = getPolygonZoomTo
+            case .DRU_getWallColor: runner = getWallColor
+            case .DRU_getWallHeight: runner = getWallHeight
+            case .DRU_getWallLightnessFactor: runner = getWallLightnessFactor
+            case .DRU_getWallZoomFrom: runner = getWallZoomFrom
+            case .DRU_getWallZoomTo: runner = getWallZoomTo
+            case .DRU_getZoomFrom: runner = getZoomFrom
+            case .DRU_getZoomTo: runner = getZoomTo
+            case .DRU_isBadgeVisible: runner = isBadgeVisible
+            case .DRU_isExtrusionVisible: runner = isExtrusionVisible
+            case .DRU_isIconVisible: runner = isIconVisible
+            case .DRU_isLabelVisible: runner = isLabelVisible
+            case .DRU_isModel2DVisible: runner = isModel2DVisible
+            case .DRU_isModel3DVisible: runner = isModel3DVisible
+            case .DRU_isPolygonVisible: runner = isPolygonVisible
+            case .DRU_isValid: runner = isValid
+            case .DRU_isVisible: runner = isVisible
+            case .DRU_isWallVisible: runner = isWallVisible
+            case .DRU_reset: runner = reset
+            case .DRU_setBadgeFillColor: runner = setBadgeFillColor
+            case .DRU_setBadgePosition: runner = setBadgePosition
+            case .DRU_setBadgeRadius: runner = setBadgeRadius
+            case .DRU_setBadgeScale: runner = setBadgeScale
+            case .DRU_setBadgeStrokeColor: runner = setBadgeStrokeColor
+            case .DRU_setBadgeStrokeWidth: runner = setBadgeStrokeWidth
+            case .DRU_setBadgeVisible: runner = setBadgeVisible
+            case .DRU_setBadgeZoomFrom: runner = setBadgeZoomFrom
+            case .DRU_setBadgeZoomTo: runner = setBadgeZoomTo
+            case .DRU_setExtrusionColor: runner = setExtrusionColor
+            case .DRU_setExtrusionHeight: runner = setExtrusionHeight
+            case .DRU_setExtrusionLightnessFactor: runner = setExtrusionLightnessFactor
+            case .DRU_setExtrusionVisible: runner = setExtrusionVisible
+            case .DRU_setExtrusionZoomFrom: runner = setExtrusionZoomFrom
+            case .DRU_setExtrusionZoomTo: runner = setExtrusionZoomTo
+            case .DRU_setIcon: runner = setIcon
+            case .DRU_setIconPlacement: runner = setIconPlacement
+            case .DRU_setIconSize: runner = setIconSize
+            case .DRU_setIconVisible: runner = setIconVisible
+            case .DRU_setLabel: runner = setLabel
+            case .DRU_setLabelMaxWidth: runner = setLabelMaxWidth
+            case .DRU_setLabelStyleBearing: runner = setLabelStyleBearing
+            case .DRU_setLabelStyleGraphic: runner = setLabelStyleGraphic
+            case .DRU_setLabelStyleHaloBlur: runner = setLabelStyleHaloBlur
+            case .DRU_setLabelStyleHaloColor: runner = setLabelStyleHaloColor
+            case .DRU_setLabelStyleHaloWidth: runner = setLabelStyleHaloWidth
+            case .DRU_setLabelStyleTextColor: runner = setLabelStyleTextColor
+            case .DRU_setLabelStyleTextOpacity: runner = setLabelStyleTextOpacity
+            case .DRU_setLabelStyleTextSize: runner = setLabelStyleTextSize
+            case .DRU_setLabelType: runner = setLabelType
+            case .DRU_setLabelVisible: runner = setLabelVisible
+            case .DRU_setLabelZoomFrom: runner = setLabelZoomFrom
+            case .DRU_setLabelZoomTo: runner = setLabelZoomTo
+            case .DRU_setModel2DBearing: runner = setModel2DBearing
+            case .DRU_setModel2DHeightMeters: runner = setModel2DHeightMeters
+            case .DRU_setModel2DModel: runner = setModel2DModel
+            case .DRU_setModel2DVisible: runner = setModel2DVisible
+            case .DRU_setModel2DWidthMeters: runner = setModel2DWidthMeters
+            case .DRU_setModel2DZoomFrom: runner = setModel2DZoomFrom
+            case .DRU_setModel2DZoomTo: runner = setModel2DZoomTo
+            case .DRU_setModel3DModel: runner = setModel3DModel
+            case .DRU_setModel3DRotationX: runner = setModel3DRotationX
+            case .DRU_setModel3DRotationY: runner = setModel3DRotationY
+            case .DRU_setModel3DRotationZ: runner = setModel3DRotationZ
+            case .DRU_setModel3DScale: runner = setModel3DScale
+            case .DRU_setModel3DVisible: runner = setModel3DVisible
+            case .DRU_setModel3DZoomFrom: runner = setModel3DZoomFrom
+            case .DRU_setModel3DZoomTo: runner = setModel3DZoomTo
+            case .DRU_setPolygonFillColor: runner = setPolygonFillColor
+            case .DRU_setPolygonFillOpacity: runner = setPolygonFillOpacity
+            case .DRU_setPolygonLightnessFactor: runner = setPolygonLightnessFactor
+            case .DRU_setPolygonStrokeColor: runner = setPolygonStrokeColor
+            case .DRU_setPolygonStrokeOpacity: runner = setPolygonStrokeOpacity
+            case .DRU_setPolygonStrokeWidth: runner = setPolygonStrokeWidth
+            case .DRU_setPolygonVisible: runner = setPolygonVisible
+            case .DRU_setPolygonZoomFrom: runner = setPolygonZoomFrom
+            case .DRU_setPolygonZoomTo: runner = setPolygonZoomTo
+            case .DRU_setVisible: runner = setVisible
+            case .DRU_setWallColor: runner = setWallColor
+            case .DRU_setWallHeight: runner = setWallHeight
+            case .DRU_setWallLightnessFactor: runner = setWallLightnessFactor
+            case .DRU_setWallVisible: runner = setWallVisible
+            case .DRU_setWallZoomFrom: runner = setWallZoomFrom
+            case .DRU_setWallZoomTo: runner = setWallZoomTo
+            case .DRU_setZoomFrom: runner = setZoomFrom
+            case .DRU_setZoomTo: runner = setZoomTo
             }
             
             runner(arguments, mapsIndoorsData, result)
         }
-       
+        
         func getDisplayRule(id: String) -> MPDisplayRule? {
-            let location = MPMapsIndoors.shared.locationWith(locationId: id)
-            if (location != nil) {
-                return MPMapsIndoors.shared.displayRuleFor(location: location!)
-            }else {
-                if (isSolutionDisplayRule(name: id) != nil) {
-                    return MPMapsIndoors.shared.displayRuleFor(displayRuleType: isSolutionDisplayRule(name: id)!)
-                }else {
+            if let location = MPMapsIndoors.shared.locationWith(locationId: id) {
+                return MPMapsIndoors.shared.displayRuleFor(location: location)
+            } else {
+                if let displayRuleType = isSolutionDisplayRule(name: id) {
+                    return MPMapsIndoors.shared.displayRuleFor(displayRuleType: displayRuleType)
+                } else {
                     return MPMapsIndoors.shared.displayRuleFor(type: id)
                 }
             }
@@ -191,1253 +309,972 @@ public class DisplayRuleMethodChannel: NSObject {
             let r: CGFloat = components?[0] ?? 0.0
             let g: CGFloat = components?[1] ?? 0.0
             let b: CGFloat = components?[2] ?? 0.0
-
-            let hexString = String.init(format: "#%02lX%02lX%02lX", lroundf(Float(r * 255)), lroundf(Float(g * 255)), lroundf(Float(b * 255)))
+            
+            let hexString = String(format: "#%02lX%02lX%02lX", lroundf(Float(r * 255)), lroundf(Float(g * 255)), lroundf(Float(b * 255)))
             print(hexString)
             return hexString
-         }
+        }
         
         func isSolutionDisplayRule(name: String) -> MPDisplayRuleType? {
             switch name {
             case "buildingOutline":
-                return MPDisplayRuleType.buildingOutline
+                return .buildingOutline
             case "selectionHighlight":
-                return MPDisplayRuleType.selectionHighlight
+                return .selectionHighlight
             case "positionIndicator":
-                return MPDisplayRuleType.blueDot
+                return .blueDot
             case "main":
-                return MPDisplayRuleType.main
+                return .main
+            case "highlight":
+                return .highlight
+            case "selection":
+                return .selection
             case "default":
-                return MPDisplayRuleType.default
+                return .default
             default:
                 return nil
             }
         }
         
-        func isVisible(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_isVisible", details: nil))
+        func isVisible(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_isVisible, result: result) else { return }
+            result(displayRule.visible)
+        }
+        
+        func setVisible(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "visible", type: Bool.self, arguments: arguments, method: .DRU_setVisible, result: result) else {
+                return
+            }
+            displayRule.visible = value
+            result(nil)
+        }
+        
+        func getIconSize(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getIconSize, result: result) else { return }
+            let data = try? JSONEncoder().encode(MPIconSizeCodable(withCGSize: displayRule.iconSize))
+            guard let iconSizeData = data, let iconSizeString = String(data: iconSizeData, encoding: .utf8) else {
+                result(FlutterError(code: "Failed to encode icon size", message: "DRU_getIconSize", details: nil))
                 return
             }
             
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(displayRule!.visible)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_isVisible", details: nil))
-            }
+            result(iconSizeString)
         }
         
-        func setVisible(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+        func getIconUrl(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getIconUrl, result: result) else { return }
+            result(displayRule.iconURL?.absoluteString)
+        }
+        
+        func getLabel(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getLabel, result: result) else { return }
+            result(displayRule.label)
+        }
+        
+        private func displayRuleFor(arguments: [String: Any]?, method: Methods, result: @escaping FlutterResult) -> MPDisplayRule? {
             guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setVisible", details: nil))
-                return
+                result(FlutterError(code: "Could not find id for DisplayRule", message: method.rawValue, details: nil))
+                return nil
             }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let visibility = arguments?["visible"] as? Bool else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setVisible", details: nil))
-                    return
-                }
-                displayRule?.visible = visibility
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setVisible", details: nil))
+            guard let displayRule = getDisplayRule(id: displayRuleId) else {
+                result(FlutterError(code: "No DisplayRule existing for this Id", message: method.rawValue, details: nil))
+                return nil
             }
+            return displayRule
         }
         
-        func getIconSize(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_getIconSize", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                let data = try? JSONEncoder().encode(MPIconSizeCodable(withCGSize: displayRule!.iconSize))
-                if (data != nil) {
-                    let iconSizeString = String(data: data!, encoding: String.Encoding.utf8)
-                    result(iconSizeString)
-                }
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_getIconSize", details: nil))
-            }
+        func getLabelMaxWidth(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getLabelMaxWidth, result: result) else { return }
+            result(displayRule.labelMaxWidth)
         }
         
-        func getIconUrl(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_getIconUrl", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(displayRule!.iconURL?.absoluteString)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_getIconUrl", details: nil))
-            }
+        func getLabelZoomFrom(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getLabelZoomFrom, result: result) else { return }
+            result(displayRule.labelZoomFrom)
         }
         
-        func getLabel(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_getLabel", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(displayRule!.label)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_getLabel", details: nil))
-            }
+        func getLabelZoomTo(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getLabelZoomTo, result: result) else { return }
+            result(displayRule.labelZoomTo)
         }
         
-        func getLabelMaxWidth(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_getLabelMaxWidth", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(displayRule!.labelMaxWidth)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_getLabelMaxWidth", details: nil))
-            }
+        func getModel2DBearing(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getModel2DBearing, result: result) else { return }
+            result(displayRule.model2DBearing)
         }
         
-        func getLabelZoomFrom(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_getLabelZoomFrom", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(displayRule!.labelZoomFrom)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_getLabelZoomFrom", details: nil))
-            }
+        func getModel2DHeightMeters(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getModel2DHeightMeters, result: result) else { return }
+            result(displayRule.model2DHeightMeters)
         }
         
-        func getLabelZoomTo(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_getLabelZoomTo", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(displayRule!.labelZoomTo)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_getLabelZoomTo", details: nil))
-            }
+        func getModel2DModel(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getModel2DModel, result: result) else { return }
+            result(displayRule.model2DModel)
         }
         
-        func getModel2DBearing(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_getModel2DBearing", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(displayRule!.model2DBearing)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_getModel2DBearing", details: nil))
-            }
+        func getModel2DZoomTo(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getModel2DZoomTo, result: result) else { return }
+            result(displayRule.model2DZoomTo)
         }
         
-        func getModel2DHeightMeters(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_getModel2DHeightMeters", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(displayRule!.model2DHeightMeters)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_getModel2DHeightMeters", details: nil))
-            }
+        func getModel2DWidthMeters(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getModel2DWidthMeters, result: result) else { return }
+            result(displayRule.model2DWidthMeters)
         }
         
-        func getModel2DModel(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_getModel2DModel", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(displayRule!.model2DModel)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_getModel2DModel", details: nil))
-            }
+        func getModel2DZoomFrom(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getModel2DZoomFrom, result: result) else { return }
+            result(displayRule.model2DZoomFrom)
         }
         
-        func getModel2DZoomTo(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_getModel2DZoomTo", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(displayRule!.model2DZoomTo)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_getModel2DZoomTo", details: nil))
-            }
+        func getPolygonFillColor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getPolygonFillColor, result: result) else { return }
+            result(hexStringFromColor(color: displayRule.polygonFillColor!))
         }
         
-        func getModel2DWidthMeters(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_getModel2DWidthMeters", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(displayRule!.model2DWidthMeters)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_getModel2DWidthMeters", details: nil))
-            }
+        func getPolygonFillOpacity(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getPolygonFillOpacity, result: result) else { return }
+            result(displayRule.polygonFillOpacity)
         }
         
-        func getModel2DZoomFrom(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_getModel2DZoomFrom", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(displayRule!.model2DZoomFrom)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_getModel2DZoomFrom", details: nil))
-            }
+        func getPolygonZoomTo(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getPolygonZoomTo, result: result) else { return }
+            result(displayRule.polygonZoomTo)
         }
         
-        func getPolygonFillColor(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_getPolygonFillColor", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(hexStringFromColor(color: displayRule!.polygonFillColor!))
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_getPolygonFillColor", details: nil))
-            }
+        func getPolygonStrokeColor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getPolygonStrokeColor, result: result) else { return }
+            result(hexStringFromColor(color: displayRule.polygonStrokeColor!))
         }
         
-        func getPolygonFillOpacity(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_getPolygonFillOpacity", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(displayRule!.polygonFillOpacity)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_getPolygonFillOpacity", details: nil))
-            }
+        func getPolygonStrokeOpacity(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getPolygonStrokeOpacity, result: result) else { return }
+            result(displayRule.polygonStrokeOpacity)
         }
         
-        func getPolygonZoomTo(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_getPolygonZoomTo", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(displayRule!.polygonZoomTo)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_getPolygonZoomTo", details: nil))
-            }
+        func getPolygonStrokeWidth(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getPolygonStrokeWidth, result: result) else { return }
+            result(displayRule.polygonStrokeWidth)
         }
         
-        func getPolygonStrokeColor(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_getPolygonStrokeColor", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(hexStringFromColor(color: displayRule!.polygonStrokeColor!))
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_getPolygonStrokeColor", details: nil))
-            }
+        func getPolygonZoomFrom(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getPolygonZoomFrom, result: result) else { return }
+            result(displayRule.polygonZoomFrom)
         }
         
-        func getPolygonStrokeOpacity(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_getPolygonStrokeOpacity", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(displayRule!.polygonStrokeOpacity)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_getPolygonStrokeOpacity", details: nil))
-            }
+        func getZoomFrom(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getZoomFrom, result: result) else { return }
+            result(displayRule.zoomFrom)
         }
         
-        func getPolygonStrokeWidth(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_getPolygonStrokeWidth", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(displayRule!.polygonStrokeWidth)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_getPolygonStrokeWidth", details: nil))
-            }
+        func getZoomTo(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getZoomTo, result: result) else { return }
+            result(displayRule.zoomTo)
         }
         
-        func getPolygonZoomFrom(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_getPolygonZoomFrom", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(displayRule!.polygonZoomFrom)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_getPolygonZoomFrom", details: nil))
-            }
+        func isIconVisible(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_isIconVisible, result: result) else { return }
+            result(displayRule.iconVisible)
         }
         
-        func getZoomFrom(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_getZoomFrom", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(displayRule!.zoomFrom)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_getZoomFrom", details: nil))
-            }
+        func isLabelVisible(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_isLabelVisible, result: result) else { return }
+            result(displayRule.labelVisible)
         }
         
-        func getZoomTo(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_getZoomTo", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(displayRule!.zoomTo)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_getZoomTo", details: nil))
-            }
+        func isModel2DVisible(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_isModel2DVisible, result: result) else { return }
+            result(displayRule.model2DVisible)
         }
         
-        func isIconVisible(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_isIconVisible", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(displayRule!.iconVisible)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_isIconVisible", details: nil))
-            }
+        func isPolygonVisible(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_isPolygonVisible, result: result) else { return }
+            result(displayRule.polygonVisible)
         }
         
-        func isLabelVisible(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_isLabelVisible", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(displayRule!.labelVisible)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_isLabelVisible", details: nil))
-            }
+        func isValid(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_isValid, result: result) else { return }
+            result(true)
         }
         
-        func isModel2DVisible(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_isModel2DVisible", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(displayRule!.model2DVisible)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_isModel2DVisible", details: nil))
-            }
-        }
-        
-        func isPolygonVisible(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_isPolygonVisible", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(displayRule!.polygonVisible)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_isPolygonVisible", details: nil))
-            }
-        }
-        
-        func isValid(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_isValid", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(true)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_isValid", details: nil))
-            }
-        }
-        
-        func reset(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+        func reset(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
             guard let displayRuleId = arguments?["id"] as? String else {
                 result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_reset", details: nil))
                 return
             }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                displayRule!.reset()
-                result(nil)
-            }else {
+            guard let displayRule = getDisplayRule(id: displayRuleId) else {
                 result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_reset", details: nil))
-            }
-        }
-        
-        func setIcon(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setIcon", details: nil))
                 return
             }
             
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let url = arguments?["url"] as? String else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setIcon", details: nil))
-                    return
-                }
-                displayRule?.iconURL = URL(string: url)
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setIcon", details: nil))
-            }
+            displayRule.reset()
+            result(nil)
         }
         
-        func setIconVisible(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+        func setIcon(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "url", type: String.self, arguments: arguments, method: .DRU_setIcon, result: result) else {
+                return
+            }
+            displayRule.iconURL = URL(string: value)
+            result(nil)
+        }
+        
+        func setIconVisible(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "visible", type: Bool.self, arguments: arguments, method: .DRU_setIconVisible, result: result) else {
+                return
+            }
+            displayRule.iconVisible = value
+            result(nil)
+        }
+        
+        func setIconSize(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "size", type: String.self, arguments: arguments, method: .DRU_setIconSize, result: result) else {
+                return
+            }
+            guard let iconSize = try? JSONDecoder().decode(MPIconSizeCodable.self, from: Data(value.utf8)) else {
+                result(FlutterError(code: "Could not parse iconSize", message: "DRU_setIconSize", details: nil))
+                return
+            }
+            displayRule.iconSize = CGSize(width: iconSize.width!, height: iconSize.height!)
+            result(nil)
+        }
+        
+        func setLabel(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "label", type: String.self, arguments: arguments, method: .DRU_setLabel, result: result) else {
+                return
+            }
+            displayRule.label = value
+            result(nil)
+        }
+        
+        func setLabelMaxWidth(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "maxWidth", type: UInt.self, arguments: arguments, method: .DRU_setLabelMaxWidth, result: result) else {
+                return
+            }
+            displayRule.labelMaxWidth = value
+            result(nil)
+        }
+        
+        func setLabelVisible(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "visible", type: Bool.self, arguments: arguments, method: .DRU_setLabelVisible, result: result) else {
+                return
+            }
+            displayRule.labelVisible = value
+            result(nil)
+        }
+        
+        func setLabelZoomFrom(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomFrom", type: Double.self, arguments: arguments, method: .DRU_setLabelZoomFrom, result: result) else {
+                return
+            }
+            displayRule.labelZoomFrom = value
+            result(nil)
+        }
+        
+        func setLabelZoomTo(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomTo", type: Double.self, arguments: arguments, method: .DRU_setLabelZoomTo, result: result) else {
+                return
+            }
+            displayRule.labelZoomTo = value
+            result(nil)
+        }
+        
+        func setModel2DBearing(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "bearing", type: Double.self, arguments: arguments, method: .DRU_setModel2DBearing, result: result) else {
+                return
+            }
+            displayRule.model2DBearing = value
+            result(nil)
+        }
+        
+        func setModel2DModel(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "model", type: String.self, arguments: arguments, method: .DRU_setModel2DModel, result: result) else {
+                return
+            }
+            displayRule.model2DModel = value
+            result(nil)
+        }
+        
+        func setModel2DHeightMeters(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "height", type: Double.self, arguments: arguments, method: .DRU_setModel2DHeightMeters, result: result) else {
+                return
+            }
+            displayRule.model2DHeightMeters = value
+            result(nil)
+        }
+        
+        func setModel2DVisible(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "visible", type: Bool.self, arguments: arguments, method: .DRU_setModel2DVisible, result: result) else {
+                return
+            }
+            displayRule.model2DVisible = value
+            result(nil)
+        }
+        
+        func setModel2DWidthMeters(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "width", type: Double.self, arguments: arguments, method: .DRU_setModel2DWidthMeters, result: result) else {
+                return
+            }
+            displayRule.model2DWidthMeters = value
+            result(nil)
+        }
+        
+        func setModel2DZoomFrom(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomFrom", type: Double.self, arguments: arguments, method: .DRU_setModel2DZoomFrom, result: result) else {
+                return
+            }
+            displayRule.model2DZoomFrom = value
+            result(nil)
+        }
+        
+        func setModel2DZoomTo(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomTo", type: Double.self, arguments: arguments, method: .DRU_setModel2DZoomTo, result: result) else {
+                return
+            }
+            displayRule.model2DZoomTo = value
+            result(nil)
+        }
+        
+        func setPolygonFillColor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "color", type: String.self, arguments: arguments, method: .DRU_setPolygonFillColor, result: result) else {
+                return
+            }
+            displayRule.polygonFillColor = UIColor(hex: value)
+            result(nil)
+        }
+        
+        func setPolygonFillOpacity(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "opacity", type: Double.self, arguments: arguments, method: .DRU_setPolygonFillOpacity, result: result) else {
+                return
+            }
+            displayRule.polygonFillOpacity = value
+            result(nil)
+        }
+        
+        func setPolygonStrokeColor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "color", type: String.self, arguments: arguments, method: .DRU_setPolygonStrokeColor, result: result) else {
+                return
+            }
+            displayRule.polygonStrokeColor = UIColor(hex: value)
+            result(nil)
+        }
+        
+        func setPolygonStrokeOpacity(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "opacity", type: Double.self, arguments: arguments, method: .DRU_setPolygonStrokeOpacity, result: result) else {
+                return
+            }
+            displayRule.polygonStrokeOpacity = value
+            result(nil)
+        }
+        
+        func setPolygonStrokeWidth(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "width", type: Double.self, arguments: arguments, method: .DRU_setPolygonStrokeWidth, result: result) else {
+                return
+            }
+            displayRule.polygonStrokeWidth = value
+            result(nil)
+        }
+        
+        func setPolygonVisible(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "visible", type: Bool.self, arguments: arguments, method: .DRU_setPolygonVisible, result: result) else {
+                return
+            }
+            displayRule.polygonVisible = value
+            result(nil)
+        }
+        
+        func setPolygonZoomFrom(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomFrom", type: Double.self, arguments: arguments, method: .DRU_setPolygonZoomFrom, result: result) else {
+                return
+            }
+            displayRule.polygonZoomFrom = value
+            result(nil)
+        }
+        
+        func setPolygonZoomTo(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomTo", type: Double.self, arguments: arguments, method: .DRU_setPolygonZoomTo, result: result) else {
+                return
+            }
+            displayRule.polygonZoomTo = value
+            result(nil)
+        }
+        
+        func getExtrusionColor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getExtrusionColor, result: result) else { return }
+            result(hexStringFromColor(color: displayRule.extrusionColor!))
+        }
+        
+        func getExtrusionHeight(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getExtrusionHeight, result: result) else { return }
+            result(displayRule.extrusionHeight)
+        }
+        
+        func getExtrusionZoomFrom(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getExtrusionZoomFrom, result: result) else { return }
+            result(displayRule.extrusionZoomFrom)
+        }
+        
+        func getExtrusionZoomTo(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getExtrusionZoomTo, result: result) else { return }
+            result(displayRule.extrusionZoomTo)
+        }
+        
+        func getWallColor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getWallColor, result: result) else { return }
+            result(hexStringFromColor(color: displayRule.wallsColor!))
+        }
+        
+        func getWallHeight(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getWallHeight, result: result) else { return }
+            result(displayRule.wallsHeight)
+        }
+        
+        func getWallZoomFrom(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getWallZoomFrom, result: result) else { return }
+            result(displayRule.wallsZoomFrom)
+        }
+        
+        func getWallZoomTo(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getWallZoomTo, result: result) else { return }
+            result(displayRule.wallsZoomTo)
+        }
+        
+        func isExtrusionVisible(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_isExtrusionVisible, result: result) else { return }
+            result(displayRule.extrusionVisible)
+        }
+        
+        func isWallVisible(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_isWallVisible, result: result) else { return }
+            result(displayRule.wallsVisible)
+        }
+        
+        func setExtrusionColor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "color", type: String.self, arguments: arguments, method: .DRU_setExtrusionColor, result: result) else {
+                return
+            }
+            displayRule.extrusionColor = UIColor(hex: value)
+            result(nil)
+        }
+        
+        func setExtrusionHeight(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "height", type: Double.self, arguments: arguments, method: .DRU_setExtrusionHeight, result: result) else {
+                return
+            }
+            displayRule.extrusionHeight = value
+            result(nil)
+        }
+        
+        func setExtrusionVisible(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "visible", type: Bool.self, arguments: arguments, method: .DRU_setExtrusionVisible, result: result) else {
+                return
+            }
+            displayRule.extrusionVisible = value
+            result(nil)
+        }
+        
+        func setExtrusionZoomFrom(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomFrom", type: Double.self, arguments: arguments, method: .DRU_setExtrusionZoomFrom, result: result) else {
+                return
+            }
+            displayRule.extrusionZoomFrom = value
+            result(nil)
+        }
+        
+        func setExtrusionZoomTo(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomTo", type: Double.self, arguments: arguments, method: .DRU_setExtrusionZoomTo, result: result) else {
+                return
+            }
+            displayRule.extrusionZoomTo = value
+            result(nil)
+        }
+        
+        func setWallColor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "color", type: String.self, arguments: arguments, method: .DRU_setWallColor, result: result) else {
+                return
+            }
+            displayRule.wallsColor = UIColor(hex: value)
+            result(nil)
+        }
+        
+        func setWallHeight(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "height", type: Double.self, arguments: arguments, method: .DRU_setWallHeight, result: result) else {
+                return
+            }
+            displayRule.wallsHeight = value
+            result(nil)
+        }
+        
+        func setWallVisible(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "visible", type: Bool.self, arguments: arguments, method: .DRU_setWallVisible, result: result) else {
+                return
+            }
+            displayRule.wallsVisible = value
+            result(nil)
+        }
+        
+        func setWallZoomFrom(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomFrom", type: Double.self, arguments: arguments, method: .DRU_setWallZoomFrom, result: result) else {
+                return
+            }
+            displayRule.wallsZoomFrom = value
+            result(nil)
+        }
+        
+        func setWallZoomTo(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomTo", type: Double.self, arguments: arguments, method: .DRU_setWallZoomTo, result: result) else {
+                return
+            }
+            displayRule.wallsZoomTo = value
+            result(nil)
+        }
+        
+        func setZoomFrom(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomFrom", type: Double.self, arguments: arguments, method: .DRU_setZoomFrom, result: result) else {
+                return
+            }
+            displayRule.zoomFrom = value
+            result(nil)
+        }
+        
+        func setZoomTo(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomTo", type: Double.self, arguments: arguments, method: .DRU_setZoomTo, result: result) else {
+                return
+            }
+            displayRule.zoomTo = value
+            result(nil)
+        }
+        
+        func getModel3DRotationX(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getModel3DRotationX, result: result) else { return }
+            result(displayRule.model3DRotationX)
+        }
+        
+        func getModel3DRotationY(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getModel3DRotationY, result: result) else { return }
+            result(displayRule.model3DRotationY)
+        }
+        
+        func getModel3DRotationZ(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getModel3DRotationZ, result: result) else { return }
+            result(displayRule.model3DRotationZ)
+        }
+        
+        func getModel3DModel(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getModel3DModel, result: result) else { return }
+            result(displayRule.model3DModel)
+        }
+        
+        func getModel3DScale(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getModel3DScale, result: result) else { return }
+            result(displayRule.model3DScale)
+        }
+        
+        func isModel3DVisible(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_isModel3DVisible, result: result) else { return }
+            result(displayRule.model3DVisible)
+        }
+        
+        func getModel3DZoomFrom(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getModel3DZoomFrom, result: result) else { return }
+            result(displayRule.model3DZoomFrom)
+        }
+        
+        func getModel3DZoomTo(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getModel3DZoomTo, result: result) else { return }
+            result(displayRule.model3DZoomTo)
+        }
+        
+        func setModel3DModel(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "model", type: String.self, arguments: arguments, method: .DRU_setModel3DModel, result: result) else {
+                return
+            }
+            displayRule.model3DModel = value
+            result(nil)
+        }
+        
+        func setModel3DRotationX(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "rotation", type: Double.self, arguments: arguments, method: .DRU_setModel3DRotationX, result: result) else {
+                return
+            }
+            displayRule.model3DRotationX = value
+            result(nil)
+        }
+        
+        func setModel3DRotationY(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "rotation", type: Double.self, arguments: arguments, method: .DRU_setModel3DRotationY, result: result) else {
+                return
+            }
+            displayRule.model3DRotationY = value
+            result(nil)
+        }
+        
+        func setModel3DRotationZ(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "rotation", type: Double.self, arguments: arguments, method: .DRU_setModel3DRotationZ, result: result) else {
+                return
+            }
+            displayRule.model3DRotationZ = value
+            result(nil)
+        }
+        
+        func setModel3DScale(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "scale", type: Double.self, arguments: arguments, method: .DRU_setModel3DScale, result: result) else {
+                return
+            }
+            displayRule.model3DScale = value
+            result(nil)
+        }
+        
+        func setModel3DVisible(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "visible", type: Bool.self, arguments: arguments, method: .DRU_setModel3DVisible, result: result) else {
+                return
+            }
+            displayRule.model3DVisible = value
+            result(nil)
+        }
+        
+        func setModel3DZoomFrom(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomFrom", type: Double.self, arguments: arguments, method: .DRU_setModel3DZoomFrom, result: result) else {
+                return
+            }
+            displayRule.model3DZoomFrom = value
+            result(nil)
+        }
+        
+        func setModel3DZoomTo(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomTo", type: Double.self, arguments: arguments, method: .DRU_setModel3DZoomTo, result: result) else {
+                return
+            }
+            displayRule.model3DZoomTo = value
+            result(nil)
+        }
+        
+        func setBadgeFillColor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "color", type: String.self, arguments: arguments, method: .DRU_setBadgeFillColor, result: result) else {
+                return
+            }
+            displayRule.badgeFillColor = UIColor(hex: value)
+            result(nil)
+        }
+        
+        func setBadgePosition(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "position", type: String.self, arguments: arguments, method: .DRU_setBadgePosition, result: result) else {
+                return
+            }
+            displayRule.badgePosition = MPBadgePosition(rawValue: value)
+            result(nil)
+        }
+        
+        func setBadgeRadius(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "radius", type: Int.self, arguments: arguments, method: .DRU_setBadgeRadius, result: result) else {
+                return
+            }
+            displayRule.badgeRadius = value
+            result(nil)
+        }
+        
+        func setBadgeScale(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "scale", type: Double.self, arguments: arguments, method: .DRU_setBadgeScale, result: result) else {
+                return
+            }
+            displayRule.badgeScale = value
+            result(nil)
+        }
+        
+        func setBadgeStrokeColor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "color", type: String.self, arguments: arguments, method: .DRU_setBadgeStrokeColor, result: result) else {
+                return
+            }
+            displayRule.badgeStrokeColor = UIColor(hex: value)
+            result(nil)
+        }
+        
+        func setBadgeStrokeWidth(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "width", type: Double.self, arguments: arguments, method: .DRU_setBadgeStrokeWidth, result: result) else {
+                return
+            }
+            displayRule.badgeStrokeWidth = value
+            result(nil)
+        }
+        
+        func setBadgeVisible(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "visible", type: Bool.self, arguments: arguments, method: .DRU_setBadgeVisible, result: result) else {
+                return
+            }
+            displayRule.badgeVisible = value
+            result(nil)
+        }
+        
+        func setBadgeZoomFrom(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomFrom", type: Double.self, arguments: arguments, method: .DRU_setBadgeZoomFrom, result: result) else {
+                return
+            }
+            displayRule.badgeZoomFrom = value
+            result(nil)
+        }
+        
+        func setBadgeZoomTo(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomTo", type: Double.self, arguments: arguments, method: .DRU_setBadgeZoomTo, result: result) else {
+                return
+            }
+            displayRule.badgeZoomTo = value
+            result(nil)
+        }
+        
+        func setExtrusionLightnessFactor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "factor", type: Double.self, arguments: arguments, method: .DRU_setExtrusionLightnessFactor, result: result) else {
+                return
+            }
+            displayRule.extrusionLightnessFactor = value
+            result(nil)
+        }
+        
+        func setIconPlacement(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "placement", type: String.self, arguments: arguments, method: .DRU_setIconPlacement, result: result) else {
+                return
+            }
+            displayRule.iconPlacement = MPIconPlacement(rawValue: value)
+            result(nil)
+        }
+        
+        func setLabelStyleBearing(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "bearing", type: Double.self, arguments: arguments, method: .DRU_setLabelStyleBearing, result: result) else {
+                return
+            }
+            displayRule.labelStyleBearing = value
+            result(nil)
+        }
+        
+        func setLabelStyleHaloBlur(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "blur", type: Int.self, arguments: arguments, method: .DRU_setLabelStyleHaloBlur, result: result) else {
+                return
+            }
+            displayRule.labelStyleHaloBlur = value
+            result(nil)
+        }
+        
+        func setLabelStyleHaloColor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "color", type: String.self, arguments: arguments, method: .DRU_setLabelStyleHaloColor, result: result) else {
+                return
+            }
+            displayRule.labelStyleHaloColor = UIColor(hex: value)
+            result(nil)
+        }
+        
+        func setLabelStyleHaloWidth(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "width", type: Int.self, arguments: arguments, method: .DRU_setLabelStyleHaloWidth, result: result) else {
+                return
+            }
+            displayRule.labelStyleHaloWidth = value
+            result(nil)
+        }
+        
+        func setLabelStyleTextColor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "color", type: String.self, arguments: arguments, method: .DRU_setLabelStyleTextColor, result: result) else {
+                return
+            }
+            displayRule.labelStyleTextColor = UIColor(hex: value)
+            result(nil)
+        }
+        
+        func setLabelStyleTextOpacity(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "opacity", type: Double.self, arguments: arguments, method: .DRU_setLabelStyleTextOpacity, result: result) else {
+                return
+            }
+            displayRule.labelStyleTextOpacity = value
+            result(nil)
+        }
+        
+        func setLabelStyleTextSize(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "size", type: Int.self, arguments: arguments, method: .DRU_setLabelStyleTextSize, result: result) else {
+                return
+            }
+            displayRule.labelStyleTextSize = value
+            result(nil)
+        }
+        
+        func setLabelType(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "type", type: String.self, arguments: arguments, method: .DRU_setLabelType, result: result) else {
+                return
+            }
+            displayRule.labelType = MPLabelType(rawValue: value)
+            result(nil)
+        }
+        
+        func setPolygonLightnessFactor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "factor", type: Double.self, arguments: arguments, method: .DRU_setPolygonLightnessFactor, result: result) else {
+                return
+            }
+            displayRule.polygonLightnessFactor = value
+            result(nil)
+        }
+        
+        func setWallLightnessFactor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "factor", type: Double.self, arguments: arguments, method: .DRU_setWallLightnessFactor, result: result) else {
+                return
+            }
+            displayRule.wallsLightnessFactor = value
+            result(nil)
+        }
+        
+        private func displayRuleAndValueFor<T>(property: String, type _: T.Type, arguments: [String: Any]?, method: Methods, result: @escaping FlutterResult) -> (MPDisplayRule, T)? {
             guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setIconVisible", details: nil))
+                result(FlutterError(code: "Could not find id for DisplayRule", message: "\(method)", details: nil))
+                return nil
+            }
+            guard let displayRule = getDisplayRule(id: displayRuleId) else {
+                result(FlutterError(code: "No DisplayRule existing for this Id", message: "\(method)", details: nil))
+                return nil
+            }
+            guard let propertyValue = arguments?[property] as? T else {
+                result(FlutterError(code: "Could not find value for setter", message: "\(method)", details: nil))
+                return nil
+            }
+            
+            return (displayRule, propertyValue)
+        }
+
+        func getBadgeFillColor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getBadgeFillColor, result: result) else { return }
+            result(hexStringFromColor(color: displayRule.badgeFillColor!))
+        }
+        
+        func getBadgePosition(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getBadgePosition, result: result) else { return }
+            let position = (displayRule.badgePosition ?? .topLeft).rawValue
+            result(position)
+        }
+        
+        func getBadgeRadius(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getBadgeRadius, result: result) else { return }
+            result(displayRule.badgeRadius)
+        }
+        
+        func getBadgeScale(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getBadgeScale, result: result) else { return }
+            result(displayRule.badgeScale)
+        }
+        
+        func getBadgeStrokeColor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getBadgeStrokeColor, result: result) else { return }
+            result(hexStringFromColor(color: displayRule.badgeStrokeColor!))
+        }
+        
+        func getBadgeStrokeWidth(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getBadgeStrokeWidth, result: result) else { return }
+            result(displayRule.badgeStrokeWidth)
+        }
+        
+        func getBadgeZoomFrom(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getBadgeZoomFrom, result: result) else { return }
+            result(displayRule.badgeZoomFrom)
+        }
+        
+        func getBadgeZoomTo(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getBadgeZoomTo, result: result) else { return }
+            result(displayRule.badgeZoomTo)
+        }
+        
+        func getExtrusionLightnessFactor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getExtrusionLightnessFactor, result: result) else { return }
+            result(displayRule.extrusionLightnessFactor)
+        }
+        
+        func getIconPlacement(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getIconPlacement, result: result) else { return }
+            result(displayRule.iconPlacement?.rawValue)
+        }
+        
+        func getLabelStyleBearing(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getLabelStyleBearing, result: result) else { return }
+            result(displayRule.labelStyleBearing)
+        }
+        
+        func getLabelStyleHaloBlur(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getLabelStyleHaloBlur, result: result) else { return }
+            result(displayRule.labelStyleHaloBlur)
+        }
+        
+        func getLabelStyleHaloColor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getLabelStyleHaloColor, result: result) else { return }
+            result(hexStringFromColor(color: displayRule.labelStyleHaloColor!))
+        }
+        
+        func getLabelStyleHaloWidth(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getLabelStyleHaloWidth, result: result) else { return }
+            result(displayRule.labelStyleHaloWidth)
+        }
+        
+        func getLabelStyleTextColor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getLabelStyleTextColor, result: result) else { return }
+            result(hexStringFromColor(color: displayRule.labelStyleTextColor!))
+        }
+        
+        func getLabelStyleTextOpacity(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getLabelStyleTextOpacity, result: result) else { return }
+            result(displayRule.labelStyleTextOpacity)
+        }
+        
+        func getLabelStyleTextSize(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getLabelStyleTextSize, result: result) else { return }
+            result(displayRule.labelStyleTextSize)
+        }
+        
+        func getLabelType(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getLabelType, result: result) else { return }
+            result(displayRule.labelType?.rawValue)
+        }
+        
+        func getPolygonLightnessFactor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getPolygonLightnessFactor, result: result) else { return }
+            result(displayRule.polygonLightnessFactor)
+        }
+        
+        func getWallLightnessFactor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getWallLightnessFactor, result: result) else { return }
+            result(displayRule.wallsLightnessFactor)
+        }
+        
+        func isBadgeVisible(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_isBadgeVisible, result: result) else { return }
+            result(displayRule.badgeVisible)
+        }
+        
+        func getLabelStyleGraphic(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getLabelStyleGraphic, result: result) else { return }
+            let graphicLabel: [String: Any] = [
+                "backgroundImage": displayRule.labelStyleGraphicBackgroundImage,
+                "content": displayRule.labelStyleGraphicContent,
+                "stretchX": displayRule.labelStyleGraphicStretchX,
+                "stretchY": displayRule.labelStyleGraphicStretchY
+            ]
+            result(graphicLabel)
+        }
+
+        func setLabelStyleGraphic(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, valueString) = displayRuleAndValueFor(property: "graphic", type: String.self, arguments: arguments, method: .DRU_setLabelStyleGraphic, result: result) else {
                 return
             }
             
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let visibility = arguments?["visible"] as? Bool else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setIconVisible", details: nil))
-                    return
-                }
-                displayRule?.iconVisible = visibility
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setIconVisible", details: nil))
-            }
-        }
-        
-        func setIconSize(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setIconSize", details: nil))
+            guard let value = try? JSONDecoder().decode(MPLabelGraphic.self, from: Data(valueString.utf8)) else {
+                result(FlutterError(code: "Could not parse MPLabelGraphic", message: Methods.DRU_setLabelStyleGraphic.rawValue, details: nil))
                 return
             }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let iconSizeString = arguments?["size"] as? String else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setIconSize", details: nil))
-                    return
-                }
-                let iconSize = try? JSONDecoder().decode(MPIconSizeCodable.self, from: Data(iconSizeString.utf8))
-                if (iconSize != nil) {
-                    displayRule?.iconSize = CGSize(width: iconSize!.width!, height: iconSize!.height!)
-                    result(nil)
-                }else {
-                    result(FlutterError(code: "Could not parse iconSize", message: "DRU_setIconSize", details: nil))
-                }
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setIconSize", details: nil))
-            }
-        }
-        
-        func setLabel(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setLabel", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let label = arguments?["label"] as? String else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setLabel", details: nil))
-                    return
-                }
-                displayRule?.label = label
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setLabel", details: nil))
-            }
-        }
-        
-        func setLabelMaxWidth(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setLabelMaxWidth", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let maxWidth = arguments?["maxWidth"] as? UInt else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setLabelMaxWidth", details: nil))
-                    return
-                }
-                displayRule?.labelMaxWidth = maxWidth
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setLabelMaxWidth", details: nil))
-            }
-        }
-        
-        func setLabelVisible(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setLabelVisible", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let visibility = arguments?["visible"] as? Bool else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setLabelVisible", details: nil))
-                    return
-                }
-                displayRule?.labelVisible = visibility
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setLabelVisible", details: nil))
-            }
-        }
-        
-        func setLabelZoomFrom(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setLabelZoomFrom", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let zoomFrom = arguments?["zoomFrom"] as? Double else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setLabelZoomFrom", details: nil))
-                    return
-                }
-                displayRule?.labelZoomFrom = zoomFrom
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setLabelZoomFrom", details: nil))
-            }
-        }
-        
-        func setLabelZoomTo(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setLabelZoomTo", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let zoomTo = arguments?["zoomTo"] as? Double else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setLabelZoomTo", details: nil))
-                    return
-                }
-                displayRule?.labelZoomTo = zoomTo
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setLabelZoomTo", details: nil))
-            }
-        }
-        
-        func setModel2DBearing(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setModel2DBearing", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let bearing = arguments?["bearing"] as? Double else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setModel2DBearing", details: nil))
-                    return
-                }
-                displayRule?.model2DBearing = bearing
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setModel2DBearing", details: nil))
-            }
-        }
-        
-        func setModel2DModel(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setModel2DModel", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let model = arguments?["model"] as? String else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setModel2DModel", details: nil))
-                    return
-                }
-                displayRule?.model2DModel = model
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setModel2DModel", details: nil))
-            }
-        }
-        
-        func setModel2DHeightMeters(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setModel2DHeightMeters", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let height = arguments?["height"] as? Double else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setModel2DHeightMeters", details: nil))
-                    return
-                }
-                displayRule?.model2DHeightMeters = height
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setModel2DHeightMeters", details: nil))
-            }
-        }
-        
-        func setModel2DVisible(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "setModel2DVisible", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let visibility = arguments?["visible"] as? Bool else {
-                    result(FlutterError(code: "Could not find value for setter", message: "setModel2DVisible", details: nil))
-                    return
-                }
-                displayRule?.model2DVisible = visibility
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setModel2DVisible", details: nil))
-            }
-        }
-        
-        func setModel2DWidthMeters(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setModel2DWidthMeters", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let width = arguments?["width"] as? Double else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setModel2DWidthMeters", details: nil))
-                    return
-                }
-                displayRule?.model2DWidthMeters = width
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setModel2DWidthMeters", details: nil))
-            }
-        }
-        
-        func setModel2DZoomFrom(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: nil, details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let zoomFrom = arguments?["zoomFrom"] as? Double else {
-                    result(FlutterError(code: "Could not find value for setter", message: "setModel2DZoomFrom", details: nil))
-                    return
-                }
-                displayRule?.model2DZoomFrom = zoomFrom
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "setModel2DZoomFrom", details: nil))
-            }
-        }
-        
-        func setModel2DZoomTo(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setModel2DZoomTo", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let zoomTo = arguments?["zoomTo"] as? Double else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setModel2DZoomTo", details: nil))
-                    return
-                }
-                displayRule?.model2DZoomTo = zoomTo
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setModel2DZoomTo", details: nil))
-            }
-        }
-        
-        func setPolygonFillColor(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setPolygonFillColor", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let color = arguments?["color"] as? String else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setPolygonFillColor", details: nil))
-                    return
-                }
-                displayRule?.polygonFillColor = UIColor(hex: color)
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setPolygonFillColor", details: nil))
-            }
-        }
-        
-        func setPolygonFillOpacity(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setPolygonFillOpacity", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let opacity = arguments?["opacity"] as? Double else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setPolygonFillOpacity", details: nil))
-                    return
-                }
-                displayRule?.polygonFillOpacity = opacity
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setPolygonFillOpacity", details: nil))
-            }
-        }
-        
-        func setPolygonStrokeColor(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setPolygonStrokeColor", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let color = arguments?["color"] as? String else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setPolygonStrokeColor", details: nil))
-                    return
-                }
-                displayRule?.polygonStrokeColor = UIColor(hex: color)
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setPolygonStrokeColor", details: nil))
-            }
-        }
-        
-        func setPolygonStrokeOpacity(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setPolygonStrokeOpacity", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let opacity = arguments?["opacity"] as? Double else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setPolygonStrokeOpacity", details: nil))
-                    return
-                }
-                displayRule?.polygonStrokeOpacity = opacity
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setPolygonStrokeOpacity", details: nil))
-            }
-        }
-        
-        func setPolygonStrokeWidth(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setPolygonStrokeWidth", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let width = arguments?["width"] as? Double else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setPolygonStrokeWidth", details: nil))
-                    return
-                }
-                displayRule?.polygonStrokeWidth = width
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setPolygonStrokeWidth", details: nil))
-            }
-        }
-        
-        func setPolygonVisible(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setPolygonVisible", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let visibility = arguments?["visible"] as? Bool else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setPolygonVisible", details: nil))
-                    return
-                }
-                displayRule?.polygonVisible = visibility
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setPolygonVisible", details: nil))
-            }
-        }
-        
-        func setPolygonZoomFrom(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setPolygonZoomFrom", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let zoomFrom = arguments?["zoomFrom"] as? Double else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setPolygonZoomFrom", details: nil))
-                    return
-                }
-                displayRule?.polygonZoomFrom = zoomFrom
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setPolygonZoomFrom", details: nil))
-            }
-        }
-        
-        func setPolygonZoomTo(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setPolygonZoomTo", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let zoomTo = arguments?["zoomTo"] as? Double else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setPolygonZoomTo", details: nil))
-                    return
-                }
-                displayRule?.polygonZoomTo = zoomTo
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setPolygonZoomTo", details: nil))
-            }
-        }
-        
-        func getExtrusionColor(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_getExtrusionColor", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(hexStringFromColor(color: displayRule!.extrusionColor!))
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_getExtrusionColor", details: nil))
-            }
-        }
-        
-        func getExtrusionHeight(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_getExtrusionHeight", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(displayRule!.extrusionHeight)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_getExtrusionHeight", details: nil))
-            }
-        }
-        
-        func getExtrusionZoomFrom(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_getExtrusionZoomFrom", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(displayRule!.extrusionZoomFrom)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_getExtrusionZoomFrom", details: nil))
-            }
-        }
-        
-        func getExtrusionZoomTo(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_getExtrusionZoomTo", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(displayRule!.extrusionZoomTo)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_getExtrusionZoomTo", details: nil))
-            }
-        }
-        
-        func getWallColor(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_getWallColor", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(hexStringFromColor(color: displayRule!.wallsColor!))
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_getWallColor", details: nil))
-            }
-        }
-        
-        func getWallHeight(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_getWallHeight", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(displayRule!.wallsHeight)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_getWallHeight", details: nil))
-            }
-        }
-        
-        func getWallZoomFrom(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_getWallZoomFrom", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(displayRule!.wallsZoomFrom)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_getWallZoomFrom", details: nil))
-            }
-        }
-        
-        func getWallZoomTo(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_getWallZoomTo", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(displayRule!.wallsZoomTo)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_getWallZoomTo", details: nil))
-            }
-        }
-        
-        func isExtrusionVisible(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_isExtrusionVisible", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(displayRule!.extrusionVisible)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_isExtrusionVisible", details: nil))
-            }
-        }
-        
-        func isWallVisible(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_isWallVisible", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                result(displayRule!.wallsVisible)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_isWallVisible", details: nil))
-            }
-        }
-        
-        func setExtrusionColor(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setExtrusionColor", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let color = arguments?["color"] as? String else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setExtrusionColor", details: nil))
-                    return
-                }
-                displayRule?.extrusionColor = UIColor(hex: color)
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setExtrusionColor", details: nil))
-            }
-        }
-        
-        func setExtrusionHeight(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setExtrusionHeight", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let height = arguments?["height"] as? Double else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setExtrusionHeight", details: nil))
-                    return
-                }
-                displayRule?.extrusionHeight = height
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setExtrusionHeight", details: nil))
-            }
-        }
-        
-        func setExtrusionVisible(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setExtrusionVisible", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let visibility = arguments?["visible"] as? Bool else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setExtrusionVisible", details: nil))
-                    return
-                }
-                displayRule?.extrusionVisible = visibility
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setExtrusionVisible", details: nil))
-            }
-        }
-        
-        func setExtrusionZoomFrom(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setExtrusionZoomFrom", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let zoomFrom = arguments?["zoomFrom"] as? Double else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setExtrusionZoomFrom", details: nil))
-                    return
-                }
-                displayRule?.extrusionZoomFrom = zoomFrom
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setExtrusionZoomFrom", details: nil))
-            }
-        }
-        
-        func setExtrusionZoomTo(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setExtrusionZoomTo", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let zoomTo = arguments?["zoomTo"] as? Double else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setExtrusionZoomTo", details: nil))
-                    return
-                }
-                displayRule?.extrusionZoomTo = zoomTo
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setExtrusionZoomTo", details: nil))
-            }
-        }
-        
-        func setWallColor(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setWallColor", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let color = arguments?["color"] as? String else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setWallColor", details: nil))
-                    return
-                }
-                displayRule?.wallsColor = UIColor(hex: color)
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setWallColor", details: nil))
-            }
-        }
-        
-        func setWallHeight(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setWallHeight", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let height = arguments?["height"] as? Double else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setWallHeight", details: nil))
-                    return
-                }
-                displayRule?.wallsHeight = height
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setWallHeight", details: nil))
-            }
-        }
-        
-        func setWallVisible(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setWallVisible", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let visibility = arguments?["visible"] as? Bool else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setWallVisible", details: nil))
-                    return
-                }
-                displayRule?.wallsVisible = visibility
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setWallVisible", details: nil))
-            }
-        }
-        
-        func setWallZoomFrom(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setWallZoomFrom", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let zoomFrom = arguments?["zoomFrom"] as? Double else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setWallZoomFrom", details: nil))
-                    return
-                }
-                displayRule?.wallsZoomFrom = zoomFrom
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setWallZoomFrom", details: nil))
-            }
-        }
-        
-        func setWallZoomTo(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setWallZoomTo", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let zoomTo = arguments?["zoomTo"] as? Double else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setWallZoomTo", details: nil))
-                    return
-                }
-                displayRule?.wallsZoomTo = zoomTo
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setWallZoomTo", details: nil))
-            }
-        }
-        
-        func setZoomFrom(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setZoomFrom", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let zoomFrom = arguments?["zoomFrom"] as? Double else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setZoomFrom", details: nil))
-                    return
-                }
-                displayRule?.zoomFrom = zoomFrom
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setZoomFrom", details: nil))
-            }
-        }
-        
-        func setZoomTo(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRuleId = arguments?["id"] as? String else {
-                result(FlutterError(code: "Could not find id for DisplayRule", message: "DRU_setZoomTo", details: nil))
-                return
-            }
-            
-            let displayRule = getDisplayRule(id: displayRuleId)
-            if (displayRule != nil) {
-                guard let zoomTo = arguments?["zoomTo"] as? Double else {
-                    result(FlutterError(code: "Could not find value for setter", message: "DRU_setZoomTo", details: nil))
-                    return
-                }
-                displayRule?.zoomTo = zoomTo
-                result(nil)
-            }else {
-                result(FlutterError(code: "No DisplayRule existing for this Id", message: "DRU_setZoomTo", details: nil))
-            }
+
+            displayRule.labelStyleGraphicBackgroundImage = value.backgroundImage
+            displayRule.labelStyleGraphicContent = value.content
+            displayRule.labelStyleGraphicStretchX = value.stretchX
+            displayRule.labelStyleGraphicStretchY = value.stretchY
+
+            result(nil)
         }
     }
+    
+}
+
+struct MPLabelGraphic: Codable {
+    var backgroundImage: String
+    var content: [Int]
+    var stretchX: [[Int]]
+    var stretchY: [[Int]]
 }

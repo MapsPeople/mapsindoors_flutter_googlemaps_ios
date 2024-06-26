@@ -1,7 +1,7 @@
 import Flutter
 import GoogleMaps
-import MapsIndoors
 import MapsIndoorsCore
+import MapsIndoorsGoogleMaps
 
 class FLNativeViewFactory: NSObject, FlutterPlatformViewFactory {
     private var messenger: FlutterBinaryMessenger

@@ -8,8 +8,6 @@ import Flutter
 import Foundation
 import UIKit
 import MapsIndoors
-import MapsIndoorsGoogleMaps
-import GoogleMaps
 
 public class MapsIndoorsPlugin: NSObject, FlutterPlugin {
     
@@ -32,22 +30,23 @@ public class MapsIndoorsPlugin: NSObject, FlutterPlugin {
         mapControlFloorSelectorChannel = FlutterMethodChannel(name: "MapControlFloorSelectorChannel", binaryMessenger: registrar.messenger())
         mapsIndoorsListenerChannel = FlutterMethodChannel(name: "MapsIndoorsListenerChannel", binaryMessenger: registrar.messenger())
         let utilMethodChannel = FlutterMethodChannel(name: "UtilMethodChannel", binaryMessenger: registrar.messenger())
+        let locationMethodChannel = FlutterMethodChannel(name: "LocationMethodChannel", binaryMessenger: registrar.messenger())
 
         mapsIndoorsData.mapControlMethodChannel = mapControlMethodChannel
         mapsIndoorsData.mapsIndoorsMethodChannel = mapsIndoorsMethodChannel
         mapsIndoorsData.directionsRendererMethodChannel = directionsRendererListenerMethodChannel
-        
+
         registrar.addMethodCallDelegate(instance, channel: directionsRendererListenerMethodChannel!)
         registrar.addMethodCallDelegate(instance, channel: directionsServiceMethodChannel)
         registrar.addMethodCallDelegate(instance, channel: displayRuleMethodChannel)
-        registrar.addMethodCallDelegate(instance, channel: mapControlMethodChannel)
-        registrar.addMethodCallDelegate(instance, channel: mapsIndoorsMethodChannel)
-        registrar.addMethodCallDelegate(instance, channel: mapControlListenerMethodChannel!)
+        registrar.addMethodCallDelegate(instance, channel: locationMethodChannel)
         registrar.addMethodCallDelegate(instance, channel: mapControlFloorSelectorChannel!)
+        registrar.addMethodCallDelegate(instance, channel: mapControlListenerMethodChannel!)
+        registrar.addMethodCallDelegate(instance, channel: mapControlMethodChannel)
         registrar.addMethodCallDelegate(instance, channel: mapsIndoorsListenerChannel!)
-        
+        registrar.addMethodCallDelegate(instance, channel: mapsIndoorsMethodChannel)
         registrar.addMethodCallDelegate(instance, channel: utilMethodChannel)
-                    
+
         registrar.addApplicationDelegate(instance)
                 
         let factory = FLNativeViewFactory(messenger: registrar.messenger(), mapsIndoorsData: mapsIndoorsData)
@@ -69,6 +68,10 @@ public class MapsIndoorsPlugin: NSObject, FlutterPlugin {
             method.call(arguments: arguments, mapsIndoorsData: MapsIndoorsPlugin.mapsIndoorsData, result: result)
         }
         else if let method = DisplayRuleMethodChannel.Methods(rawValue: call.method)
+        {
+            method.call(arguments: arguments, mapsIndoorsData: MapsIndoorsPlugin.mapsIndoorsData, result: result)
+        }
+        else if let method = LocationMethodChannel.Methods(rawValue: call.method)
         {
             method.call(arguments: arguments, mapsIndoorsData: MapsIndoorsPlugin.mapsIndoorsData, result: result)
         }
