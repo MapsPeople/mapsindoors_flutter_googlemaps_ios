@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'mapsindoors_googlemaps_ios'
-  s.version          = '2.2.0-alpha.1'
+  s.version          = '3.0.2'
   s.summary          = 'Mapsindoors flutter plugin'
   s.homepage         = 'http://mapspeople.com'
   s.license          = { :file => '../LICENSE' }
@@ -18,6 +18,6 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
   s.swift_version = '5.9'
 
-  s.dependency 'MapsIndoorsCodable', "4.5.7"
-  s.dependency 'MapsIndoorsGoogleMaps', "4.5.7"
+  s.dependency 'MapsIndoorsCodable', "4.5.12"
+  s.dependency 'MapsIndoorsGoogleMaps', "4.5.12"
 end

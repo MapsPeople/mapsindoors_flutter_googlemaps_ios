@@ -13,6 +13,8 @@ import MapsIndoorsCore
 import UIKit
 
 public class DisplayRuleMethodChannel: NSObject {
+    private static var refreshTimerWorkItem: DispatchWorkItem?
+    
     enum Methods: String {
         case DRU_getBadgeFillColor
         case DRU_getBadgePosition
@@ -341,8 +343,8 @@ public class DisplayRuleMethodChannel: NSObject {
             result(displayRule.visible)
         }
         
-        func setVisible(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "visible", type: Bool.self, arguments: arguments, method: .DRU_setVisible, result: result) else {
+        func setVisible(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "visible", type: Bool.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setVisible, result: result) else {
                 return
             }
             displayRule.visible = value
@@ -493,7 +495,7 @@ public class DisplayRuleMethodChannel: NSObject {
         }
         
         func isValid(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_isValid, result: result) else { return }
+            guard displayRuleFor(arguments: arguments, method: .DRU_isValid, result: result) != nil else { return }
             result(true)
         }
         
@@ -511,24 +513,24 @@ public class DisplayRuleMethodChannel: NSObject {
             result(nil)
         }
         
-        func setIcon(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "url", type: String.self, arguments: arguments, method: .DRU_setIcon, result: result) else {
+        func setIcon(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "url", type: String.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setIcon, result: result) else {
                 return
             }
             displayRule.iconURL = URL(string: value)
             result(nil)
         }
         
-        func setIconVisible(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "visible", type: Bool.self, arguments: arguments, method: .DRU_setIconVisible, result: result) else {
+        func setIconVisible(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "visible", type: Bool.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setIconVisible, result: result) else {
                 return
             }
             displayRule.iconVisible = value
             result(nil)
         }
         
-        func setIconSize(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "size", type: String.self, arguments: arguments, method: .DRU_setIconSize, result: result) else {
+        func setIconSize(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "size", type: String.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setIconSize, result: result) else {
                 return
             }
             guard let iconSize = try? JSONDecoder().decode(MPIconSizeCodable.self, from: Data(value.utf8)) else {
@@ -539,160 +541,160 @@ public class DisplayRuleMethodChannel: NSObject {
             result(nil)
         }
         
-        func setLabel(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "label", type: String.self, arguments: arguments, method: .DRU_setLabel, result: result) else {
+        func setLabel(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "label", type: String.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setLabel, result: result) else {
                 return
             }
             displayRule.label = value
             result(nil)
         }
         
-        func setLabelMaxWidth(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "maxWidth", type: UInt.self, arguments: arguments, method: .DRU_setLabelMaxWidth, result: result) else {
+        func setLabelMaxWidth(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "maxWidth", type: UInt.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setLabelMaxWidth, result: result) else {
                 return
             }
             displayRule.labelMaxWidth = value
             result(nil)
         }
         
-        func setLabelVisible(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "visible", type: Bool.self, arguments: arguments, method: .DRU_setLabelVisible, result: result) else {
+        func setLabelVisible(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "visible", type: Bool.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setLabelVisible, result: result) else {
                 return
             }
             displayRule.labelVisible = value
             result(nil)
         }
         
-        func setLabelZoomFrom(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomFrom", type: Double.self, arguments: arguments, method: .DRU_setLabelZoomFrom, result: result) else {
+        func setLabelZoomFrom(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomFrom", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setLabelZoomFrom, result: result) else {
                 return
             }
             displayRule.labelZoomFrom = value
             result(nil)
         }
         
-        func setLabelZoomTo(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomTo", type: Double.self, arguments: arguments, method: .DRU_setLabelZoomTo, result: result) else {
+        func setLabelZoomTo(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomTo", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setLabelZoomTo, result: result) else {
                 return
             }
             displayRule.labelZoomTo = value
             result(nil)
         }
         
-        func setModel2DBearing(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "bearing", type: Double.self, arguments: arguments, method: .DRU_setModel2DBearing, result: result) else {
+        func setModel2DBearing(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "bearing", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setModel2DBearing, result: result) else {
                 return
             }
             displayRule.model2DBearing = value
             result(nil)
         }
         
-        func setModel2DModel(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "model", type: String.self, arguments: arguments, method: .DRU_setModel2DModel, result: result) else {
+        func setModel2DModel(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "model", type: String.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setModel2DModel, result: result) else {
                 return
             }
             displayRule.model2DModel = value
             result(nil)
         }
         
-        func setModel2DHeightMeters(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "height", type: Double.self, arguments: arguments, method: .DRU_setModel2DHeightMeters, result: result) else {
+        func setModel2DHeightMeters(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "height", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setModel2DHeightMeters, result: result) else {
                 return
             }
             displayRule.model2DHeightMeters = value
             result(nil)
         }
         
-        func setModel2DVisible(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "visible", type: Bool.self, arguments: arguments, method: .DRU_setModel2DVisible, result: result) else {
+        func setModel2DVisible(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "visible", type: Bool.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setModel2DVisible, result: result) else {
                 return
             }
             displayRule.model2DVisible = value
             result(nil)
         }
         
-        func setModel2DWidthMeters(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "width", type: Double.self, arguments: arguments, method: .DRU_setModel2DWidthMeters, result: result) else {
+        func setModel2DWidthMeters(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "width", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setModel2DWidthMeters, result: result) else {
                 return
             }
             displayRule.model2DWidthMeters = value
             result(nil)
         }
         
-        func setModel2DZoomFrom(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomFrom", type: Double.self, arguments: arguments, method: .DRU_setModel2DZoomFrom, result: result) else {
+        func setModel2DZoomFrom(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomFrom", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setModel2DZoomFrom, result: result) else {
                 return
             }
             displayRule.model2DZoomFrom = value
             result(nil)
         }
         
-        func setModel2DZoomTo(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomTo", type: Double.self, arguments: arguments, method: .DRU_setModel2DZoomTo, result: result) else {
+        func setModel2DZoomTo(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomTo", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setModel2DZoomTo, result: result) else {
                 return
             }
             displayRule.model2DZoomTo = value
             result(nil)
         }
         
-        func setPolygonFillColor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "color", type: String.self, arguments: arguments, method: .DRU_setPolygonFillColor, result: result) else {
+        func setPolygonFillColor(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "color", type: String.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setPolygonFillColor, result: result) else {
                 return
             }
             displayRule.polygonFillColor = UIColor(hex: value)
             result(nil)
         }
         
-        func setPolygonFillOpacity(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "opacity", type: Double.self, arguments: arguments, method: .DRU_setPolygonFillOpacity, result: result) else {
+        func setPolygonFillOpacity(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "opacity", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setPolygonFillOpacity, result: result) else {
                 return
             }
             displayRule.polygonFillOpacity = value
             result(nil)
         }
         
-        func setPolygonStrokeColor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "color", type: String.self, arguments: arguments, method: .DRU_setPolygonStrokeColor, result: result) else {
+        func setPolygonStrokeColor(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "color", type: String.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setPolygonStrokeColor, result: result) else {
                 return
             }
             displayRule.polygonStrokeColor = UIColor(hex: value)
             result(nil)
         }
         
-        func setPolygonStrokeOpacity(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "opacity", type: Double.self, arguments: arguments, method: .DRU_setPolygonStrokeOpacity, result: result) else {
+        func setPolygonStrokeOpacity(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "opacity", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setPolygonStrokeOpacity, result: result) else {
                 return
             }
             displayRule.polygonStrokeOpacity = value
             result(nil)
         }
         
-        func setPolygonStrokeWidth(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "width", type: Double.self, arguments: arguments, method: .DRU_setPolygonStrokeWidth, result: result) else {
+        func setPolygonStrokeWidth(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "width", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setPolygonStrokeWidth, result: result) else {
                 return
             }
             displayRule.polygonStrokeWidth = value
             result(nil)
         }
         
-        func setPolygonVisible(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "visible", type: Bool.self, arguments: arguments, method: .DRU_setPolygonVisible, result: result) else {
+        func setPolygonVisible(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "visible", type: Bool.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setPolygonVisible, result: result) else {
                 return
             }
             displayRule.polygonVisible = value
             result(nil)
         }
         
-        func setPolygonZoomFrom(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomFrom", type: Double.self, arguments: arguments, method: .DRU_setPolygonZoomFrom, result: result) else {
+        func setPolygonZoomFrom(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomFrom", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setPolygonZoomFrom, result: result) else {
                 return
             }
             displayRule.polygonZoomFrom = value
             result(nil)
         }
         
-        func setPolygonZoomTo(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomTo", type: Double.self, arguments: arguments, method: .DRU_setPolygonZoomTo, result: result) else {
+        func setPolygonZoomTo(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomTo", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setPolygonZoomTo, result: result) else {
                 return
             }
             displayRule.polygonZoomTo = value
@@ -749,96 +751,96 @@ public class DisplayRuleMethodChannel: NSObject {
             result(displayRule.wallsVisible)
         }
         
-        func setExtrusionColor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "color", type: String.self, arguments: arguments, method: .DRU_setExtrusionColor, result: result) else {
+        func setExtrusionColor(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "color", type: String.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setExtrusionColor, result: result) else {
                 return
             }
             displayRule.extrusionColor = UIColor(hex: value)
             result(nil)
         }
         
-        func setExtrusionHeight(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "height", type: Double.self, arguments: arguments, method: .DRU_setExtrusionHeight, result: result) else {
+        func setExtrusionHeight(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "height", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setExtrusionHeight, result: result) else {
                 return
             }
             displayRule.extrusionHeight = value
             result(nil)
         }
         
-        func setExtrusionVisible(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "visible", type: Bool.self, arguments: arguments, method: .DRU_setExtrusionVisible, result: result) else {
+        func setExtrusionVisible(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "visible", type: Bool.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setExtrusionVisible, result: result) else {
                 return
             }
             displayRule.extrusionVisible = value
             result(nil)
         }
         
-        func setExtrusionZoomFrom(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomFrom", type: Double.self, arguments: arguments, method: .DRU_setExtrusionZoomFrom, result: result) else {
+        func setExtrusionZoomFrom(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomFrom", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setExtrusionZoomFrom, result: result) else {
                 return
             }
             displayRule.extrusionZoomFrom = value
             result(nil)
         }
         
-        func setExtrusionZoomTo(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomTo", type: Double.self, arguments: arguments, method: .DRU_setExtrusionZoomTo, result: result) else {
+        func setExtrusionZoomTo(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomTo", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setExtrusionZoomTo, result: result) else {
                 return
             }
             displayRule.extrusionZoomTo = value
             result(nil)
         }
         
-        func setWallColor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "color", type: String.self, arguments: arguments, method: .DRU_setWallColor, result: result) else {
+        func setWallColor(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "color", type: String.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setWallColor, result: result) else {
                 return
             }
             displayRule.wallsColor = UIColor(hex: value)
             result(nil)
         }
         
-        func setWallHeight(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "height", type: Double.self, arguments: arguments, method: .DRU_setWallHeight, result: result) else {
+        func setWallHeight(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "height", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setWallHeight, result: result) else {
                 return
             }
             displayRule.wallsHeight = value
             result(nil)
         }
         
-        func setWallVisible(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "visible", type: Bool.self, arguments: arguments, method: .DRU_setWallVisible, result: result) else {
+        func setWallVisible(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "visible", type: Bool.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setWallVisible, result: result) else {
                 return
             }
             displayRule.wallsVisible = value
             result(nil)
         }
         
-        func setWallZoomFrom(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomFrom", type: Double.self, arguments: arguments, method: .DRU_setWallZoomFrom, result: result) else {
+        func setWallZoomFrom(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomFrom", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setWallZoomFrom, result: result) else {
                 return
             }
             displayRule.wallsZoomFrom = value
             result(nil)
         }
         
-        func setWallZoomTo(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomTo", type: Double.self, arguments: arguments, method: .DRU_setWallZoomTo, result: result) else {
+        func setWallZoomTo(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomTo", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setWallZoomTo, result: result) else {
                 return
             }
             displayRule.wallsZoomTo = value
             result(nil)
         }
         
-        func setZoomFrom(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomFrom", type: Double.self, arguments: arguments, method: .DRU_setZoomFrom, result: result) else {
+        func setZoomFrom(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomFrom", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setZoomFrom, result: result) else {
                 return
             }
             displayRule.zoomFrom = value
             result(nil)
         }
         
-        func setZoomTo(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomTo", type: Double.self, arguments: arguments, method: .DRU_setZoomTo, result: result) else {
+        func setZoomTo(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomTo", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setZoomTo, result: result) else {
                 return
             }
             displayRule.zoomTo = value
@@ -885,239 +887,239 @@ public class DisplayRuleMethodChannel: NSObject {
             result(displayRule.model3DZoomTo)
         }
         
-        func setModel3DModel(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "model", type: String.self, arguments: arguments, method: .DRU_setModel3DModel, result: result) else {
+        func setModel3DModel(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "model", type: String.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setModel3DModel, result: result) else {
                 return
             }
             displayRule.model3DModel = value
             result(nil)
         }
         
-        func setModel3DRotationX(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "rotation", type: Double.self, arguments: arguments, method: .DRU_setModel3DRotationX, result: result) else {
+        func setModel3DRotationX(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "rotation", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setModel3DRotationX, result: result) else {
                 return
             }
             displayRule.model3DRotationX = value
             result(nil)
         }
         
-        func setModel3DRotationY(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "rotation", type: Double.self, arguments: arguments, method: .DRU_setModel3DRotationY, result: result) else {
+        func setModel3DRotationY(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "rotation", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setModel3DRotationY, result: result) else {
                 return
             }
             displayRule.model3DRotationY = value
             result(nil)
         }
         
-        func setModel3DRotationZ(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "rotation", type: Double.self, arguments: arguments, method: .DRU_setModel3DRotationZ, result: result) else {
+        func setModel3DRotationZ(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "rotation", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setModel3DRotationZ, result: result) else {
                 return
             }
             displayRule.model3DRotationZ = value
             result(nil)
         }
         
-        func setModel3DScale(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "scale", type: Double.self, arguments: arguments, method: .DRU_setModel3DScale, result: result) else {
+        func setModel3DScale(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "scale", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setModel3DScale, result: result) else {
                 return
             }
             displayRule.model3DScale = value
             result(nil)
         }
         
-        func setModel3DVisible(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "visible", type: Bool.self, arguments: arguments, method: .DRU_setModel3DVisible, result: result) else {
+        func setModel3DVisible(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "visible", type: Bool.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setModel3DVisible, result: result) else {
                 return
             }
             displayRule.model3DVisible = value
             result(nil)
         }
         
-        func setModel3DZoomFrom(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomFrom", type: Double.self, arguments: arguments, method: .DRU_setModel3DZoomFrom, result: result) else {
+        func setModel3DZoomFrom(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomFrom", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setModel3DZoomFrom, result: result) else {
                 return
             }
             displayRule.model3DZoomFrom = value
             result(nil)
         }
         
-        func setModel3DZoomTo(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomTo", type: Double.self, arguments: arguments, method: .DRU_setModel3DZoomTo, result: result) else {
+        func setModel3DZoomTo(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomTo", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setModel3DZoomTo, result: result) else {
                 return
             }
             displayRule.model3DZoomTo = value
             result(nil)
         }
         
-        func setBadgeFillColor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "color", type: String.self, arguments: arguments, method: .DRU_setBadgeFillColor, result: result) else {
+        func setBadgeFillColor(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "color", type: String.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setBadgeFillColor, result: result) else {
                 return
             }
             displayRule.badgeFillColor = UIColor(hex: value)
             result(nil)
         }
         
-        func setBadgePosition(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "position", type: String.self, arguments: arguments, method: .DRU_setBadgePosition, result: result) else {
+        func setBadgePosition(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "position", type: String.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setBadgePosition, result: result) else {
                 return
             }
             displayRule.badgePosition = MPBadgePosition(rawValue: value)
             result(nil)
         }
         
-        func setBadgeRadius(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "radius", type: Int.self, arguments: arguments, method: .DRU_setBadgeRadius, result: result) else {
+        func setBadgeRadius(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "radius", type: Int.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setBadgeRadius, result: result) else {
                 return
             }
             displayRule.badgeRadius = value
             result(nil)
         }
         
-        func setBadgeScale(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "scale", type: Double.self, arguments: arguments, method: .DRU_setBadgeScale, result: result) else {
+        func setBadgeScale(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "scale", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setBadgeScale, result: result) else {
                 return
             }
             displayRule.badgeScale = value
             result(nil)
         }
         
-        func setBadgeStrokeColor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "color", type: String.self, arguments: arguments, method: .DRU_setBadgeStrokeColor, result: result) else {
+        func setBadgeStrokeColor(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "color", type: String.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setBadgeStrokeColor, result: result) else {
                 return
             }
             displayRule.badgeStrokeColor = UIColor(hex: value)
             result(nil)
         }
         
-        func setBadgeStrokeWidth(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "width", type: Double.self, arguments: arguments, method: .DRU_setBadgeStrokeWidth, result: result) else {
+        func setBadgeStrokeWidth(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "width", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setBadgeStrokeWidth, result: result) else {
                 return
             }
             displayRule.badgeStrokeWidth = value
             result(nil)
         }
         
-        func setBadgeVisible(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "visible", type: Bool.self, arguments: arguments, method: .DRU_setBadgeVisible, result: result) else {
+        func setBadgeVisible(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "visible", type: Bool.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setBadgeVisible, result: result) else {
                 return
             }
             displayRule.badgeVisible = value
             result(nil)
         }
         
-        func setBadgeZoomFrom(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomFrom", type: Double.self, arguments: arguments, method: .DRU_setBadgeZoomFrom, result: result) else {
+        func setBadgeZoomFrom(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomFrom", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setBadgeZoomFrom, result: result) else {
                 return
             }
             displayRule.badgeZoomFrom = value
             result(nil)
         }
         
-        func setBadgeZoomTo(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomTo", type: Double.self, arguments: arguments, method: .DRU_setBadgeZoomTo, result: result) else {
+        func setBadgeZoomTo(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "zoomTo", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setBadgeZoomTo, result: result) else {
                 return
             }
             displayRule.badgeZoomTo = value
             result(nil)
         }
         
-        func setExtrusionLightnessFactor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "factor", type: Double.self, arguments: arguments, method: .DRU_setExtrusionLightnessFactor, result: result) else {
+        func setExtrusionLightnessFactor(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "factor", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setExtrusionLightnessFactor, result: result) else {
                 return
             }
             displayRule.extrusionLightnessFactor = value
             result(nil)
         }
         
-        func setIconPlacement(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "placement", type: String.self, arguments: arguments, method: .DRU_setIconPlacement, result: result) else {
+        func setIconPlacement(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "placement", type: String.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setIconPlacement, result: result) else {
                 return
             }
             displayRule.iconPlacement = MPIconPlacement(rawValue: value)
             result(nil)
         }
         
-        func setLabelStyleBearing(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "bearing", type: Double.self, arguments: arguments, method: .DRU_setLabelStyleBearing, result: result) else {
+        func setLabelStyleBearing(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "bearing", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setLabelStyleBearing, result: result) else {
                 return
             }
             displayRule.labelStyleBearing = value
             result(nil)
         }
         
-        func setLabelStyleHaloBlur(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "blur", type: Int.self, arguments: arguments, method: .DRU_setLabelStyleHaloBlur, result: result) else {
+        func setLabelStyleHaloBlur(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "blur", type: Int.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setLabelStyleHaloBlur, result: result) else {
                 return
             }
             displayRule.labelStyleHaloBlur = value
             result(nil)
         }
         
-        func setLabelStyleHaloColor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "color", type: String.self, arguments: arguments, method: .DRU_setLabelStyleHaloColor, result: result) else {
+        func setLabelStyleHaloColor(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "color", type: String.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setLabelStyleHaloColor, result: result) else {
                 return
             }
             displayRule.labelStyleHaloColor = UIColor(hex: value)
             result(nil)
         }
         
-        func setLabelStyleHaloWidth(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "width", type: Int.self, arguments: arguments, method: .DRU_setLabelStyleHaloWidth, result: result) else {
+        func setLabelStyleHaloWidth(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "width", type: Int.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setLabelStyleHaloWidth, result: result) else {
                 return
             }
             displayRule.labelStyleHaloWidth = value
             result(nil)
         }
         
-        func setLabelStyleTextColor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "color", type: String.self, arguments: arguments, method: .DRU_setLabelStyleTextColor, result: result) else {
+        func setLabelStyleTextColor(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "color", type: String.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setLabelStyleTextColor, result: result) else {
                 return
             }
             displayRule.labelStyleTextColor = UIColor(hex: value)
             result(nil)
         }
         
-        func setLabelStyleTextOpacity(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "opacity", type: Double.self, arguments: arguments, method: .DRU_setLabelStyleTextOpacity, result: result) else {
+        func setLabelStyleTextOpacity(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "opacity", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setLabelStyleTextOpacity, result: result) else {
                 return
             }
             displayRule.labelStyleTextOpacity = value
             result(nil)
         }
         
-        func setLabelStyleTextSize(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "size", type: Int.self, arguments: arguments, method: .DRU_setLabelStyleTextSize, result: result) else {
+        func setLabelStyleTextSize(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "size", type: Int.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setLabelStyleTextSize, result: result) else {
                 return
             }
             displayRule.labelStyleTextSize = value
             result(nil)
         }
         
-        func setLabelType(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "type", type: String.self, arguments: arguments, method: .DRU_setLabelType, result: result) else {
+        func setLabelType(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "type", type: String.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setLabelType, result: result) else {
                 return
             }
             displayRule.labelType = MPLabelType(rawValue: value)
             result(nil)
         }
         
-        func setPolygonLightnessFactor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "factor", type: Double.self, arguments: arguments, method: .DRU_setPolygonLightnessFactor, result: result) else {
+        func setPolygonLightnessFactor(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "factor", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setPolygonLightnessFactor, result: result) else {
                 return
             }
             displayRule.polygonLightnessFactor = value
             result(nil)
         }
         
-        func setWallLightnessFactor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, value) = displayRuleAndValueFor(property: "factor", type: Double.self, arguments: arguments, method: .DRU_setWallLightnessFactor, result: result) else {
+        func setWallLightnessFactor(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "factor", type: Double.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setWallLightnessFactor, result: result) else {
                 return
             }
             displayRule.wallsLightnessFactor = value
             result(nil)
         }
         
-        private func displayRuleAndValueFor<T>(property: String, type _: T.Type, arguments: [String: Any]?, method: Methods, result: @escaping FlutterResult) -> (MPDisplayRule, T)? {
+        private func displayRuleAndValueFor<T>(property: String, type _: T.Type, arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, method: Methods, result: @escaping FlutterResult) -> (MPDisplayRule, T)? {
             guard let displayRuleId = arguments?["id"] as? String else {
                 result(FlutterError(code: "Could not find id for DisplayRule", message: "\(method)", details: nil))
                 return nil
@@ -1131,7 +1133,20 @@ public class DisplayRuleMethodChannel: NSObject {
                 return nil
             }
             
+            setRefreshTimer(mapsIndoorsData)
             return (displayRule, propertyValue)
+        }
+
+        func setRefreshTimer(_ mapsIndoorsData: MapsIndoorsData) {
+            refreshTimerWorkItem?.cancel()
+
+            refreshTimerWorkItem = DispatchWorkItem {
+                mapsIndoorsData.mapControl?.refresh()
+            }
+            
+            if let refreshTimerWorkItem {
+                DispatchQueue.global().asyncAfter(deadline: .now() + 0.5, execute: refreshTimerWorkItem)
+            }
         }
 
         func getBadgeFillColor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
@@ -1251,8 +1266,8 @@ public class DisplayRuleMethodChannel: NSObject {
             result(graphicLabel)
         }
 
-        func setLabelStyleGraphic(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let (displayRule, valueString) = displayRuleAndValueFor(property: "graphic", type: String.self, arguments: arguments, method: .DRU_setLabelStyleGraphic, result: result) else {
+        func setLabelStyleGraphic(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, valueString) = displayRuleAndValueFor(property: "graphic", type: String.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setLabelStyleGraphic, result: result) else {
                 return
             }
             
