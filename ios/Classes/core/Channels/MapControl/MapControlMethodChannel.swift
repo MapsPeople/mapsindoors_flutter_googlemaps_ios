@@ -56,6 +56,7 @@ public class MapControlMethodChannel: NSObject {
         case MPC_setFloorSelectionMode
         case MPC_getHiddenFeatures
         case MPC_setHiddenFeatures
+        case MPC_showCompassOnRotate
 
         func call(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
             let runner: (_ arguments: [String: Any]?, _ mapsIndoorsData: MapsIndoorsData, _ result: @escaping FlutterResult) -> Void = switch self {
@@ -101,6 +102,7 @@ public class MapControlMethodChannel: NSObject {
             case .MPC_setFloorSelectionMode: setFloorSelectionMode
             case .MPC_getHiddenFeatures: getHiddenFeatures
             case .MPC_setHiddenFeatures: setHiddenFeatures
+            case .MPC_showCompassOnRotate: showCompassOnRotate
             }
 
             runner(arguments, mapsIndoorsData, result)
@@ -795,6 +797,19 @@ public class MapControlMethodChannel: NSObject {
 
             mapsIndoorsData.mapControl?.hiddenFeatures = features
             result(nil)
+        }
+
+        func showCompassOnRotate(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let show = arguments?["show"] as? Bool else {
+                result(FlutterError(code: "Could not read show", message: nil, details: nil))
+                return
+            }
+            do {
+                try mapsIndoorsData.mapView?.showCompassOnRotate(show)
+                result(nil)
+            } catch {
+                result(FlutterError(code: "Could not change showing of compass", message: "MPC_showCompassOnRotate", details: nil))
+            }
         }
     }
 }

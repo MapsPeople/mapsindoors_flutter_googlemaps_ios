@@ -39,7 +39,7 @@ class FLNativeView: NSObject, FlutterPlatformView, MPMapControlDelegate, Flutter
     private var mapsIndoorsData: MapsIndoorsData
     private var args: Any? = nil
     private let googleApiKey = Bundle.main.object(forInfoDictionaryKey: "GoogleMapsAPIKey") as? String ?? ""
-
+    
     init(
         frame: CGRect,
         arguments args: Any?,
@@ -52,7 +52,7 @@ class FLNativeView: NSObject, FlutterPlatformView, MPMapControlDelegate, Flutter
         _GMSView = GMSMapView(frame: frame, camera: GMSCameraPosition())
         super.init()
         mapsIndoorsData.mapView = self
-
+        
         if (MPMapsIndoors.shared.ready) {
             mapsIndoorsIsReady()
         } else {
@@ -63,7 +63,7 @@ class FLNativeView: NSObject, FlutterPlatformView, MPMapControlDelegate, Flutter
         // It should be the center of the view.
         _GMSView.moveCamera(GMSCameraUpdate.setCamera(GMSCameraPosition()))
     }
-
+    
     func view() -> UIView {
         return _GMSView
     }
@@ -126,6 +126,10 @@ class FLNativeView: NSObject, FlutterPlatformView, MPMapControlDelegate, Flutter
         }
         
         return update
+    }
+    
+    func showCompassOnRotate(_ show: Bool) throws {
+        _GMSView.settings.compassButton = show
     }
 }
 

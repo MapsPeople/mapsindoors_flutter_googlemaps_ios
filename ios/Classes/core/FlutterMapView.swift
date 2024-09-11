@@ -11,4 +11,5 @@ import MapsIndoors
 protocol FlutterMapView {
     func animateCamera(cameraUpdate: CameraUpdate, duration: Int) throws
     func moveCamera(cameraUpdate: CameraUpdate) throws
+    func showCompassOnRotate(_ show: Bool) throws
 }
