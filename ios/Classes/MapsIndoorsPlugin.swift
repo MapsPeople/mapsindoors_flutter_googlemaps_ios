@@ -11,13 +11,12 @@ import MapsIndoors
 
 public class MapsIndoorsPlugin: NSObject, FlutterPlugin {
     
-    static let mapsIndoorsData: MapsIndoorsData = MapsIndoorsData()
-    static var mapsIndoorsListenerChannel: FlutterMethodChannel? = nil
-    static var mapControlListenerMethodChannel: FlutterMethodChannel? = nil
-    static var directionsRendererListenerMethodChannel: FlutterMethodChannel? = nil
-    static var mapControlFloorSelectorChannel: FlutterMethodChannel? = nil
+    static let mapsIndoorsData = MapsIndoorsData()
+    static var mapsIndoorsListenerChannel: FlutterMethodChannel?
+    static var mapControlListenerMethodChannel: FlutterMethodChannel?
+    static var directionsRendererListenerMethodChannel: FlutterMethodChannel?
+    static var mapControlFloorSelectorChannel: FlutterMethodChannel?
 
-    
     public static func register(with registrar: FlutterPluginRegistrar) {
         let instance = MapsIndoorsPlugin()
 
@@ -35,6 +34,7 @@ public class MapsIndoorsPlugin: NSObject, FlutterPlugin {
         mapsIndoorsData.mapControlMethodChannel = mapControlMethodChannel
         mapsIndoorsData.mapsIndoorsMethodChannel = mapsIndoorsMethodChannel
         mapsIndoorsData.directionsRendererMethodChannel = directionsRendererListenerMethodChannel
+        mapsIndoorsData.mapControlFloorSelector = mapControlFloorSelectorChannel
 
         registrar.addMethodCallDelegate(instance, channel: directionsRendererListenerMethodChannel!)
         registrar.addMethodCallDelegate(instance, channel: directionsServiceMethodChannel)

@@ -1,15 +1,9 @@
-//
-//  MapsIndoorsData.swift
-//  mapsindoors_ios
-//
-//  Created by Martin Hansen on 21/02/2023.
-
-import Foundation
-import UIKit
-import MapsIndoors
-import MapsIndoorsCore
 import Flutter
+import Foundation
+import MapsIndoors
 import MapsIndoorsCodable
+import MapsIndoorsCore
+import UIKit
 
 protocol MapsIndoorsReadyDelegate: AnyObject {
     func isReady(error: MPError?)
@@ -20,85 +14,80 @@ protocol LiveDataDelegate: AnyObject {
 }
 
 public class MapsIndoorsData: NSObject {
-
     var delegate: [MapsIndoorsReadyDelegate] = []
-    
+
     var liveDataDelegate: LiveDataDelegate?
-    
+
     var mapControlListenerDelegate: MapControlDelegate?
-    
+
     var mapView: FlutterMapView?
 
     var mapControl: MPMapControl?
-    
-    var isMapControlInitialized: Bool {
-        get { mapControl != nil }
-    }
-    
-    var isMapsIndoorsReady: Bool {
-        get { MPMapsIndoors.shared.ready }
-    }
-    
+
+    var isMapControlInitialized: Bool { mapControl != nil }
+
+    var isMapsIndoorsReady: Bool { MPMapsIndoors.shared.ready }
+
     func mapsIndoorsReady(error: MPError?) {
-        delegate.forEach {
-            $0.isReady(error: error)
+        for item in delegate {
+            item.isReady(error: error)
         }
     }
-    
+
     var mapControlMethodChannel: FlutterMethodChannel?
-    
+
     var directionsRendererMethodChannel: FlutterMethodChannel?
 
     var mapsIndoorsMethodChannel: FlutterMethodChannel?
-    
+
     var mapControlFloorSelector: FlutterMethodChannel?
-    
+
     var positionProvider: FlutterPositionProvider?
-    
+
     var directionsRenderer: MPDirectionsRenderer?
-    
+
     var floorSelector: MPCustomFloorSelector?
 }
 
 public class CustomFloorSelector: UIView, MPCustomFloorSelector {
     public var isAutoFloorChangeEnabled = true
-    
-    public var methodChannel: FlutterMethodChannel? = nil
-    
+
+    public var methodChannel: FlutterMethodChannel?
+
     public var building: MapsIndoors.MPBuilding?
-    
+
     public var delegate: MapsIndoors.MPFloorSelectorDelegate?
-    
+
     public var floorIndex: NSNumber?
-    
+
     init(isAutoFloorChangeEnabled: Bool = true, methodChannel: FlutterMethodChannel) {
         super.init(frame: CGRect())
         self.methodChannel = methodChannel
         self.isAutoFloorChangeEnabled = isAutoFloorChangeEnabled
-        self.delegate = FloorSelectorDelegate(floorSelector: self)
+        delegate = FloorSelectorDelegate(floorSelector: self)
     }
-    
-    required init?(coder: NSCoder) {
+
+    required init?(coder _: NSCoder) {
         super.init(frame: CGRect())
     }
-    
+
     public func onShow() {
-        if (building != nil) {
-            let floors = building?.floors?.values.map {MPFloorCodable(withFloor: $0)}
-            let jsonData = try! JSONEncoder().encode(floors)
-            let resultJson = String(data: jsonData, encoding: String.Encoding.utf8)
-            
-            methodChannel?.invokeMethod("setList", arguments: resultJson)
+        if let building {
+            let floors = building.floors?.values.map { MPFloorCodable(withFloor: $0) }
+            if let jsonData = try? JSONEncoder().encode(floors) {
+                let resultJson = String(decoding: jsonData, as: UTF8.self)
+                methodChannel?.invokeMethod("setList", arguments: resultJson)
+            }
         }
         let map = ["show": true]
         methodChannel?.invokeMethod("show", arguments: map)
     }
-    
+
     public func onHide() {
         let map = ["show": false]
         methodChannel?.invokeMethod("show", arguments: map)
     }
-    
+
     public func onUserPositionFloorChange(floorIndex: Int) {
         methodChannel?.invokeMethod("setUserPositionFloor", arguments: floorIndex)
     }
@@ -106,13 +95,13 @@ public class CustomFloorSelector: UIView, MPCustomFloorSelector {
 
 public class FloorSelectorDelegate: MPFloorSelectorDelegate {
     private var customFloorSelector: CustomFloorSelector
-    
+
     init(floorSelector: CustomFloorSelector) {
         customFloorSelector = floorSelector
     }
-    
+
     public func onFloorIndexChanged(_ floorIndex: NSNumber) {
-        if (customFloorSelector.isAutoFloorChangeEnabled) {
+        if customFloorSelector.isAutoFloorChangeEnabled {
             customFloorSelector.floorIndex = floorIndex
         }
     }
@@ -120,36 +109,36 @@ public class FloorSelectorDelegate: MPFloorSelectorDelegate {
 
 public class FlutterPositionProvider: MPPositionProvider {
     public var latestPosition: MapsIndoors.MPPositionResult?
-    
+
     public var name = "default"
     public var delegate: MapsIndoors.MPPositionProviderDelegate?
     public var mapsIndoorsData: MapsIndoorsData?
-        
+
     public func setLatestPosition(positionResult: MPPositionResult) {
-        if (latestPosition?.floorIndex != positionResult.floorIndex) {
+        if latestPosition?.floorIndex != positionResult.floorIndex {
             let floorSelector = mapsIndoorsData?.floorSelector as? CustomFloorSelector
             floorSelector?.onUserPositionFloorChange(floorIndex: positionResult.floorIndex)
         }
-        
+
         delegate?.onPositionUpdate(position: positionResult)
         latestPosition = positionResult
     }
 }
 
 public class MapControlLiveDataDelegate: LiveDataDelegate {
-    var methodChannel: FlutterMethodChannel? = nil
-    
+    var methodChannel: FlutterMethodChannel?
+
     init(methodChannel: FlutterMethodChannel) {
         self.methodChannel = methodChannel
     }
-    
+
     func dataReceived(liveUpdate: MapsIndoors.MPLiveUpdate) {
         let domain = liveUpdate.topic.domainType
         let location = MPMapsIndoors.shared.locationWith(locationId: liveUpdate.itemId)
-        if (location != nil && domain != nil) {
+        if location != nil, domain != nil {
             let locationData = try? JSONEncoder().encode(MPLocationCodable(withLocation: location!))
-            if (locationData != nil) {
-                let locationString = String(data: locationData!, encoding: String.Encoding.utf8)
+            if let locationData {
+                let locationString = String(decoding: locationData, as: UTF8.self)
                 let map = ["location": locationString, "domainType": domain]
                 methodChannel?.invokeMethod("onLiveLocationUpdate", arguments: map)
             }
@@ -159,105 +148,120 @@ public class MapControlLiveDataDelegate: LiveDataDelegate {
 
 public class MapControlDelegate: MPMapControlDelegate {
     var methodChannel: FlutterMethodChannel
-    
-    var respondToTap: Bool = false
-    var consumeTap: Bool = false
-    
-    var respondToTapIcon: Bool = false
-    var consumeTapIcon: Bool = false
-    
-    var respondToDidChangeFloorIndex: Bool = false
-    
-    var respondToDidChangeBuilding: Bool = false
-    
-    var respondToDidChangeVenue: Bool = false
-    
-    var respondToDidChangeLocation: Bool = false
-    var consumeChangeLocation: Bool = false
-    
-    var respondToDidTapInfoWindow: Bool = false
-    
+
+    var respondToTap = false
+    var consumeTap = false
+
+    var respondToTapIcon = false
+    var consumeTapIcon = false
+
+    var respondToDidChangeFloorIndex = false
+
+    var respondToDidChangeBuilding = false
+
+    var respondToDidChangeVenue = false
+
+    var respondToDidChangeLocation = false
+    var consumeChangeLocation = false
+
+    var respondToDidTapInfoWindow = false
+
+    var respondToCameraEvents = false
+
     init(methodChannel: FlutterMethodChannel) {
         self.methodChannel = methodChannel
     }
-    
+
     public func didTap(coordinate: MPPoint) -> Bool {
-        if (respondToTap) {
+        if respondToTap {
             var map = [String: Any?]()
-            let pointData = try? JSONEncoder().encode(coordinate)
-            if (pointData != nil) {
-                map["point"] = String(data: pointData!, encoding: String.Encoding.utf8)
+            if let pointData = try? JSONEncoder().encode(coordinate) {
+                map["point"] = String(decoding: pointData, as: UTF8.self)
             }
             methodChannel.invokeMethod("onMapClick", arguments: map)
             return consumeTap
-        }else {
+        } else {
             return false
         }
     }
-    
+
     public func didTapIcon(location: MPLocation) -> Bool {
-        if (respondToTapIcon) {
+        if respondToTapIcon {
             methodChannel.invokeMethod("onMarkerClick", arguments: location.locationId)
             return consumeTapIcon
-        }else {
+        } else {
             return false
         }
     }
-    
+
     public func didChange(floorIndex: Int) -> Bool {
-        if (respondToDidChangeFloorIndex) {
+        if respondToDidChangeFloorIndex {
             var map = [String: Any]()
             map["floor"] = floorIndex
             methodChannel.invokeMethod("onFloorUpdate", arguments: map)
         }
         return false
     }
-    
+
     public func didChange(selectedVenue: MPVenue?) -> Bool {
-        if (respondToDidChangeVenue) {
-            var venueString: String? = nil
-            if (selectedVenue != nil) {
-                let venueData = try? JSONEncoder().encode(MPVenueCodable(withVenue: selectedVenue!))
-                if (venueData != nil) {
-                    venueString = String(data: venueData!, encoding: String.Encoding.utf8)
-                }
+        if respondToDidChangeVenue {
+            var venueString: String?
+            if let selectedVenue, let venueData = try? JSONEncoder().encode(MPVenueCodable(withVenue: selectedVenue)) {
+                venueString = String(decoding: venueData, as: UTF8.self)
             }
             methodChannel.invokeMethod("onVenueFoundAtCameraTarget", arguments: venueString)
         }
         return false
     }
-    
+
     public func didChange(selectedBuilding: MPBuilding?) -> Bool {
-        if (respondToDidChangeBuilding) {
-            var buildingString: String? = nil
-            if (selectedBuilding != nil) {
-                let buildingData = try? JSONEncoder().encode(MPBuildingCodable(withBuilding: selectedBuilding!))
-                if (buildingData != nil) {
-                    buildingString = String(data: buildingData!, encoding: String.Encoding.utf8)
-                }
+        if respondToDidChangeBuilding {
+            var buildingString: String?
+            if let selectedBuilding,
+               let buildingData = try? JSONEncoder().encode(MPBuildingCodable(withBuilding: selectedBuilding)) {
+                buildingString = String(decoding: buildingData, as: UTF8.self)
             }
             methodChannel.invokeMethod("onBuildingFoundAtCameraTarget", arguments: buildingString)
         }
         return false
     }
-    
+
     public func didChange(selectedLocation: MPLocation?) -> Bool {
-        if (respondToDidChangeLocation) {
-            var locationString: String? = nil
-            if (selectedLocation != nil) {
-                let locationData = try? JSONEncoder().encode(MPLocationCodable(withLocation: selectedLocation!))
-                if (locationData != nil) {
-                    locationString = String(data: locationData!, encoding: String.Encoding.utf8)
-                }
+        if respondToDidChangeLocation {
+            var locationString: String?
+            if let selectedLocation,
+               let locationData = try? JSONEncoder().encode(MPLocationCodable(withLocation: selectedLocation)) {
+                locationString = String(decoding: locationData, as: UTF8.self)
             }
             methodChannel.invokeMethod("onLocationSelected", arguments: locationString)
         }
         return false
     }
-    
+
     public func didTapInfoWindow(location: MPLocation) -> Bool {
-        if (respondToDidTapInfoWindow) {
+        if respondToDidTapInfoWindow {
             methodChannel.invokeMethod("onInfoWindowClick", arguments: location.locationId)
+        }
+        return false
+    }
+
+    public func cameraIdle() -> Bool {
+        if respondToCameraEvents {
+            methodChannel.invokeMethod("", arguments: 7) // Corresponds to Android MPCameraEvent.IDLE
+        }
+        return false
+    }
+
+    public func cameraWillMove() -> Bool {
+        if respondToCameraEvents {
+            methodChannel.invokeMethod("", arguments: 5) // Corresponds to Android MPCameraEvent.ON_MOVE
+        }
+        return false
+    }
+
+    public func didChangeCameraPosition() -> Bool {
+        if respondToCameraEvents {
+            methodChannel.invokeMethod("", arguments: 5) // Corresponds to Android MPCameraEvent.ON_MOVE
         }
         return false
     }

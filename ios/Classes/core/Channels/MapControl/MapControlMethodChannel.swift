@@ -179,8 +179,10 @@ public class MapControlMethodChannel: NSObject {
                 return
             }
 
-            mapsIndoorsData.floorSelector = CustomFloorSelector(isAutoFloorChangeEnabled: isAutoFloorChangeEnabled, methodChannel: mapsIndoorsData.mapControlFloorSelector!)
-            mapsIndoorsData.mapControl?.floorSelector = mapsIndoorsData.floorSelector
+            if let floorSelectorChannel = mapsIndoorsData.mapControlFloorSelector {
+                mapsIndoorsData.floorSelector = CustomFloorSelector(isAutoFloorChangeEnabled: isAutoFloorChangeEnabled, methodChannel: floorSelectorChannel)
+                mapsIndoorsData.mapControl?.floorSelector = mapsIndoorsData.floorSelector
+            }
 
             result(nil)
         }

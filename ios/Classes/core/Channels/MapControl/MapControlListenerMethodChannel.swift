@@ -63,8 +63,7 @@ public class MapControlListenerMethodChannel: NSObject {
                 return
             }
             
-            //TODO: Not implemented
-            //result(FlutterError(code: "Not implemented on v4", message: nil, details: nil))
+            mapsIndoorsData.mapControlListenerDelegate?.respondToCameraEvents = setupListener
         }
         
         func floorUpdateListener(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult, methodChannel: FlutterMethodChannel) {
