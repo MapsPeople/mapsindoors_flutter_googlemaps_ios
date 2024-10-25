@@ -259,15 +259,24 @@ public class UtilMethodChannel: NSObject {
                 return
             }
 
-            guard let handling = args["handling"] as? String else {
+            guard let handling = args["handling"] as? Int else {
                 result(FlutterError(code: "Could not read arguments", message: "UTL_setCollisionHandling", details: nil))
                 return
             }
 
-            let decoder = JSONDecoder()
-            let collisionHandling = try! decoder.decode(MPCollisionHandling.self, from: Data(handling.utf8))
+            switch handling {
+            case 0:
+                MPMapsIndoors.shared.solution?.config.collisionHandling = .allowOverLap
+            case 1:
+                MPMapsIndoors.shared.solution?.config.collisionHandling = .removeLabelFirst
+            case 2:
+                MPMapsIndoors.shared.solution?.config.collisionHandling = .removeIconFirst
+            case 3:
+                MPMapsIndoors.shared.solution?.config.collisionHandling = .removeIconAndLabel
+            default:
+                break
+            }
 
-            MPMapsIndoors.shared.solution?.config.collisionHandling = collisionHandling
             result(nil)
         }
 

@@ -246,7 +246,8 @@ public class MapsIndoorsMethodChannel: NSObject {
             }
             
             guard let location = MPMapsIndoors.shared.locationWith(locationId: locationId) else {
-                result(FlutterError(code: "Could not find location with the given locationId", message: "MIN_getLocationById", details: nil))
+                // Same behavior as on Android
+                result(nil)
                 return
             }
             

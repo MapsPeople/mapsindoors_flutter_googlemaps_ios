@@ -178,7 +178,7 @@ public class MapControlDelegate: MPMapControlDelegate {
             if let pointData = try? JSONEncoder().encode(coordinate) {
                 map["point"] = String(decoding: pointData, as: UTF8.self)
             }
-            methodChannel.invokeMethod("onMapClick", arguments: map)
+            methodChannel.invokeMethod(FlutterCallback.onMapClick.description, arguments: map)
             return consumeTap
         } else {
             return false
@@ -187,7 +187,7 @@ public class MapControlDelegate: MPMapControlDelegate {
 
     public func didTapIcon(location: MPLocation) -> Bool {
         if respondToTapIcon {
-            methodChannel.invokeMethod("onMarkerClick", arguments: location.locationId)
+            methodChannel.invokeMethod(FlutterCallback.onMarkerClick.description, arguments: location.locationId)
             return consumeTapIcon
         } else {
             return false
@@ -198,7 +198,7 @@ public class MapControlDelegate: MPMapControlDelegate {
         if respondToDidChangeFloorIndex {
             var map = [String: Any]()
             map["floor"] = floorIndex
-            methodChannel.invokeMethod("onFloorUpdate", arguments: map)
+            methodChannel.invokeMethod(FlutterCallback.onFloorUpdate.description, arguments: map)
         }
         return false
     }
@@ -209,7 +209,7 @@ public class MapControlDelegate: MPMapControlDelegate {
             if let selectedVenue, let venueData = try? JSONEncoder().encode(MPVenueCodable(withVenue: selectedVenue)) {
                 venueString = String(decoding: venueData, as: UTF8.self)
             }
-            methodChannel.invokeMethod("onVenueFoundAtCameraTarget", arguments: venueString)
+            methodChannel.invokeMethod(FlutterCallback.onVenueFoundAtCameraTarget.description, arguments: venueString)
         }
         return false
     }
@@ -221,7 +221,7 @@ public class MapControlDelegate: MPMapControlDelegate {
                let buildingData = try? JSONEncoder().encode(MPBuildingCodable(withBuilding: selectedBuilding)) {
                 buildingString = String(decoding: buildingData, as: UTF8.self)
             }
-            methodChannel.invokeMethod("onBuildingFoundAtCameraTarget", arguments: buildingString)
+            methodChannel.invokeMethod(FlutterCallback.onBuildingFoundAtCameraTarget.description, arguments: buildingString)
         }
         return false
     }
@@ -233,36 +233,49 @@ public class MapControlDelegate: MPMapControlDelegate {
                let locationData = try? JSONEncoder().encode(MPLocationCodable(withLocation: selectedLocation)) {
                 locationString = String(decoding: locationData, as: UTF8.self)
             }
-            methodChannel.invokeMethod("onLocationSelected", arguments: locationString)
+            methodChannel.invokeMethod(FlutterCallback.onLocationSelected.description, arguments: locationString)
         }
         return false
     }
 
     public func didTapInfoWindow(location: MPLocation) -> Bool {
         if respondToDidTapInfoWindow {
-            methodChannel.invokeMethod("onInfoWindowClick", arguments: location.locationId)
+            methodChannel.invokeMethod(FlutterCallback.onInfoWindowClick.description, arguments: location.locationId)
         }
         return false
     }
 
     public func cameraIdle() -> Bool {
         if respondToCameraEvents {
-            methodChannel.invokeMethod("", arguments: 7) // Corresponds to Android MPCameraEvent.IDLE
+            methodChannel.invokeMethod(FlutterCallback.onCameraEvent.description, arguments: 7) // Corresponds to Android MPCameraEvent.IDLE
         }
         return false
     }
 
     public func cameraWillMove() -> Bool {
         if respondToCameraEvents {
-            methodChannel.invokeMethod("", arguments: 5) // Corresponds to Android MPCameraEvent.ON_MOVE
+            methodChannel.invokeMethod(FlutterCallback.onCameraEvent.description, arguments: 5) // Corresponds to Android MPCameraEvent.ON_MOVE
         }
         return false
     }
 
     public func didChangeCameraPosition() -> Bool {
         if respondToCameraEvents {
-            methodChannel.invokeMethod("", arguments: 5) // Corresponds to Android MPCameraEvent.ON_MOVE
+            methodChannel.invokeMethod(FlutterCallback.onCameraEvent.description, arguments: 5) // Corresponds to Android MPCameraEvent.ON_MOVE
         }
         return false
     }
+}
+
+private enum FlutterCallback: String, CustomStringConvertible {
+    var description: String { rawValue }
+
+    case onBuildingFoundAtCameraTarget
+    case onCameraEvent
+    case onFloorUpdate
+    case onInfoWindowClick
+    case onLocationSelected
+    case onMapClick
+    case onMarkerClick
+    case onVenueFoundAtCameraTarget
 }
