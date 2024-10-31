@@ -70,16 +70,17 @@ class FLNativeView: NSObject, FlutterPlatformView, MPMapControlDelegate, Flutter
     
     func mapsIndoorsIsReady() {
         guard mapsIndoorsData.mapView != nil else { return }
-        
+
         DispatchQueue.main.async { [self] in
             let config = MPMapConfig(gmsMapView: _GMSView, googleApiKey: googleApiKey)
             if let mapControl = MPMapsIndoors.createMapControl(mapConfig: config) {
-                //TODO: parse config
+                // TODO: parse config
                 mapControl.showUserPosition = true
-                //pretend config^
+                // pretend config^
                 mapsIndoorsData.mapControl = mapControl
                 mapsIndoorsData.directionsRenderer = nil
                 mapsIndoorsData.mapControlMethodChannel?.invokeMethod("create", arguments: nil)
+                mapControl.floorSelector = mapsIndoorsData.floorSelector
             }
         }
     }

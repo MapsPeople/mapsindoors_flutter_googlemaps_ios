@@ -196,9 +196,7 @@ public class MapControlDelegate: MPMapControlDelegate {
 
     public func didChange(floorIndex: Int) -> Bool {
         if respondToDidChangeFloorIndex {
-            var map = [String: Any]()
-            map["floor"] = floorIndex
-            methodChannel.invokeMethod(FlutterCallback.onFloorUpdate.description, arguments: map)
+            methodChannel.invokeMethod(FlutterCallback.onFloorUpdate.description, arguments: floorIndex)
         }
         return false
     }

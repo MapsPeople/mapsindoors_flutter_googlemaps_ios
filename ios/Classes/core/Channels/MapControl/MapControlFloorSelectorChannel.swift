@@ -17,9 +17,7 @@ public class MapControlFloorSelectorChannel: NSObject {
         case FSE_onFloorChanged
         
         func call(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult, methodChannel: FlutterMethodChannel?) {
-            if (methodChannel == nil) {
-                return
-            }
+            guard let methodChannel else { return }
             
             let runner: (_ arguments: [String: Any]?, _ mapsIndoorsData: MapsIndoorsData, _ result: @escaping FlutterResult, _ methodChannel: FlutterMethodChannel) -> Void
             
@@ -27,7 +25,7 @@ public class MapControlFloorSelectorChannel: NSObject {
                 case .FSE_onFloorChanged:             runner = onFloorChanged
             }
             
-            runner(arguments, mapsIndoorsData, result, methodChannel!)
+            runner(arguments, mapsIndoorsData, result, methodChannel)
         }
         
         func onFloorChanged(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult, methodChannel: FlutterMethodChannel) {
