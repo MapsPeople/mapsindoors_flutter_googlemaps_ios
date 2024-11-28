@@ -60,7 +60,7 @@ public class UtilMethodChannel: NSObject {
                     return
                 }
 
-                guard let venueId = args["venueId"] as? String else {
+                guard let venueId = args["id"] as? String else {
                     result(FlutterError(code: "Could not read arguments", message: "UTL_venueHasGraph", details: nil))
                     return
                 }

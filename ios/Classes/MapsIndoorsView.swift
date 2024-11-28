@@ -37,7 +37,7 @@ class FLNativeView: NSObject, FlutterPlatformView, MPMapControlDelegate, Flutter
     
     private var _GMSView: GMSMapView
     private var mapsIndoorsData: MapsIndoorsData
-    private var args: Any? = nil
+    private var args: [String: Any]?
     private let googleApiKey = Bundle.main.object(forInfoDictionaryKey: "GoogleMapsAPIKey") as? String ?? ""
     
     init(
@@ -46,10 +46,17 @@ class FLNativeView: NSObject, FlutterPlatformView, MPMapControlDelegate, Flutter
         binaryMessenger messenger: FlutterBinaryMessenger?,
         mapsIndoorsData: MapsIndoorsData
     ) {
-        self.args = args
+        self.args = args as? [String: Any]
         self.mapsIndoorsData = mapsIndoorsData;
         GMSServices.provideAPIKey(googleApiKey)
-        _GMSView = GMSMapView(frame: frame, camera: GMSCameraPosition())
+
+        let cameraPosition = if let initialCamPos = self.args?["initialCameraPosition"] as? String, let position = try? JSONDecoder().decode(CameraPosition.self, from: initialCamPos.data(using: .utf8)!) {
+            Self.makeGMSCameraPosition(cameraPosition: position)
+        } else {
+            GMSCameraPosition()
+        }
+
+        _GMSView = GMSMapView(frame: frame, camera: cameraPosition)
         super.init()
         mapsIndoorsData.mapView = self
         
@@ -61,7 +68,7 @@ class FLNativeView: NSObject, FlutterPlatformView, MPMapControlDelegate, Flutter
         
         // To fix an odd bug, where the map center would be in the top left corner of the view.
         // It should be the center of the view.
-        _GMSView.moveCamera(GMSCameraUpdate.setCamera(GMSCameraPosition()))
+        _GMSView.moveCamera(GMSCameraUpdate.setCamera(cameraPosition))
     }
     
     func view() -> UIView {
@@ -98,6 +105,14 @@ class FLNativeView: NSObject, FlutterPlatformView, MPMapControlDelegate, Flutter
         }
         _GMSView.moveCamera(update)
     }
+
+    static func makeGMSCameraPosition(cameraPosition: CameraPosition) -> GMSCameraPosition {
+        GMSCameraPosition(latitude: CLLocationDegrees(cameraPosition.target.latitude),
+                          longitude: CLLocationDegrees(cameraPosition.target.longitude),
+                          zoom: cameraPosition.zoom,
+                          bearing: CLLocationDirection(floatLiteral: Double(cameraPosition.bearing)),
+                          viewingAngle: Double(cameraPosition.tilt))
+    }
     
     func makeGMSCameraUpdate(cameraUpdate: CameraUpdate) -> GMSCameraUpdate? {
         let update: GMSCameraUpdate
@@ -121,7 +136,7 @@ class FLNativeView: NSObject, FlutterPlatformView, MPMapControlDelegate, Flutter
             guard let position = cameraUpdate.position else {
                 return nil
             }
-            update = (GMSCameraUpdate.setCamera(GMSCameraPosition(latitude: CLLocationDegrees(cameraUpdate.position!.target.latitude), longitude: CLLocationDegrees(position.target.longitude), zoom: position.zoom, bearing: CLLocationDirection(floatLiteral: Double(position.bearing)), viewingAngle: Double(position.tilt)) ))
+            update = (GMSCameraUpdate.setCamera(GMSCameraPosition(latitude: CLLocationDegrees(position.target.latitude), longitude: CLLocationDegrees(position.target.longitude), zoom: position.zoom, bearing: CLLocationDirection(floatLiteral: Double(position.bearing)), viewingAngle: Double(position.tilt)) ))
         default:
             return nil
         }
