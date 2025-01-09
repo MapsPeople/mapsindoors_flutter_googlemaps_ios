@@ -37,7 +37,7 @@ class FLNativeView: NSObject, FlutterPlatformView, MPMapControlDelegate, Flutter
     
     private var _GMSView: GMSMapView
     private var mapsIndoorsData: MapsIndoorsData
-    private var args: [String: Any]?
+    private var mapConfig: MPMapConfigCodable?
     private let googleApiKey = Bundle.main.object(forInfoDictionaryKey: "GoogleMapsAPIKey") as? String ?? ""
     
     init(
@@ -46,11 +46,15 @@ class FLNativeView: NSObject, FlutterPlatformView, MPMapControlDelegate, Flutter
         binaryMessenger messenger: FlutterBinaryMessenger?,
         mapsIndoorsData: MapsIndoorsData
     ) {
-        self.args = args as? [String: Any]
+        let arguments = args as? [String: Any]
         self.mapsIndoorsData = mapsIndoorsData;
         GMSServices.provideAPIKey(googleApiKey)
 
-        let cameraPosition = if let initialCamPos = self.args?["initialCameraPosition"] as? String, let position = try? JSONDecoder().decode(CameraPosition.self, from: initialCamPos.data(using: .utf8)!) {
+        if let configArgs = arguments?["mapConfig"] as? String {
+            mapConfig = try! JSONDecoder().decode(MPMapConfigCodable.self, from: configArgs.data(using: .utf8)!)
+        }
+
+        let cameraPosition = if let initialCamPos = arguments?["initialCameraPosition"] as? String, let position = try? JSONDecoder().decode(CameraPosition.self, from: initialCamPos.data(using: .utf8)!) {
             Self.makeGMSCameraPosition(cameraPosition: position)
         } else {
             GMSCameraPosition()
@@ -81,9 +85,7 @@ class FLNativeView: NSObject, FlutterPlatformView, MPMapControlDelegate, Flutter
         DispatchQueue.main.async { [self] in
             let config = MPMapConfig(gmsMapView: _GMSView, googleApiKey: googleApiKey)
             if let mapControl = MPMapsIndoors.createMapControl(mapConfig: config) {
-                // TODO: parse config
-                mapControl.showUserPosition = true
-                // pretend config^
+                mapControl.showUserPosition = mapConfig?.showUserPosition ?? false
                 mapsIndoorsData.mapControl = mapControl
                 mapsIndoorsData.directionsRenderer = nil
                 mapsIndoorsData.mapControlMethodChannel?.invokeMethod("create", arguments: nil)
@@ -163,4 +165,13 @@ class MIReadyDelegate: MapsIndoorsReadyDelegate {
             view.mapsIndoorsIsReady()
         }
     }
+}
+
+private class MPMapConfigCodable: Codable {
+    var mapsindoorsTransitionLevel: Int?
+    var textSize: Int?
+    var showFloorSelector: Bool?
+    var showInfoWindowOnLocationClicked: Bool?
+    var showUserPosition: Bool?
+    var useDefaultMapsIndoorsStyle: Bool?
 }
