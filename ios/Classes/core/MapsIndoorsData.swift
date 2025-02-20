@@ -16,9 +16,9 @@ protocol LiveDataDelegate: AnyObject {
 public class MapsIndoorsData: NSObject {
     var delegate: [MapsIndoorsReadyDelegate] = []
 
-    var liveDataDelegate: LiveDataDelegate?
+    weak var liveDataDelegate: LiveDataDelegate?
 
-    var mapControlListenerDelegate: MapControlDelegate?
+    weak var mapControlListenerDelegate: MapControlDelegate?
 
     var mapView: FlutterMapView?
 
@@ -46,7 +46,7 @@ public class MapsIndoorsData: NSObject {
 
     var directionsRenderer: MPDirectionsRenderer?
 
-    var floorSelector: MPCustomFloorSelector?
+    weak var floorSelector: MPCustomFloorSelector?
 }
 
 public class CustomFloorSelector: UIView, MPCustomFloorSelector {
@@ -56,7 +56,7 @@ public class CustomFloorSelector: UIView, MPCustomFloorSelector {
 
     public var building: MapsIndoors.MPBuilding?
 
-    public var delegate: MapsIndoors.MPFloorSelectorDelegate?
+    public weak var delegate: MapsIndoors.MPFloorSelectorDelegate?
 
     public var floorIndex: NSNumber?
 
