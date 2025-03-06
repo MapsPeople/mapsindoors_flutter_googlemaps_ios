@@ -18,7 +18,7 @@ public class MapsIndoorsData: NSObject {
 
     weak var liveDataDelegate: LiveDataDelegate?
 
-    weak var mapControlListenerDelegate: MapControlDelegate?
+    var mapControlListenerDelegate: MapControlDelegate?
 
     var mapView: FlutterMapView?
 
@@ -52,11 +52,11 @@ public class MapsIndoorsData: NSObject {
 public class CustomFloorSelector: UIView, MPCustomFloorSelector {
     public var isAutoFloorChangeEnabled = true
 
-    public var methodChannel: FlutterMethodChannel?
+    public weak var methodChannel: FlutterMethodChannel?
 
-    public var building: MapsIndoors.MPBuilding?
+    public weak var building: MapsIndoors.MPBuilding?
 
-    public weak var delegate: MapsIndoors.MPFloorSelectorDelegate?
+    public var delegate: MapsIndoors.MPFloorSelectorDelegate?
 
     public var floorIndex: NSNumber?
 
@@ -94,15 +94,15 @@ public class CustomFloorSelector: UIView, MPCustomFloorSelector {
 }
 
 public class FloorSelectorDelegate: MPFloorSelectorDelegate {
-    private var customFloorSelector: CustomFloorSelector
+    private weak var customFloorSelector: CustomFloorSelector?
 
     init(floorSelector: CustomFloorSelector) {
         customFloorSelector = floorSelector
     }
 
     public func onFloorIndexChanged(_ floorIndex: NSNumber) {
-        if customFloorSelector.isAutoFloorChangeEnabled {
-            customFloorSelector.floorIndex = floorIndex
+        if customFloorSelector?.isAutoFloorChangeEnabled == true {
+            customFloorSelector?.floorIndex = floorIndex
         }
     }
 }

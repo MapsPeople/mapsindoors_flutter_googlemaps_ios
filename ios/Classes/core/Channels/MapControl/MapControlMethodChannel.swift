@@ -380,9 +380,29 @@ public class MapControlMethodChannel: NSObject {
                 return
             }
 
-            guard let selectionBehavior = try? JSONDecoder().decode(MPSelectionBehavior.self, from: behaviorJson.data(using: .utf8)!) else {
-                result(FlutterError(code: "Could not parse behavior", message: "MPC_selectLocation", details: nil))
+            let codeMsg = "Could not parse selectionBehavior"
+            let messageMsg = "MPC_selectLocation"
+            var selectionBehavior: MPSelectionBehavior
+            do {
+                selectionBehavior = try JSONDecoder().decode(MPSelectionBehavior.self, from: behaviorJson.data(using: .utf8)!)
+            } catch DecodingError.dataCorrupted(let context) {
+                result(FlutterError(code: codeMsg, message: messageMsg, details: context.debugDescription))
                 return
+            } catch DecodingError.keyNotFound(let type, let context) {
+                result(FlutterError(code: codeMsg, message: messageMsg, details: context.debugDescription))
+                return
+            } catch DecodingError.typeMismatch(let type, let context) {
+                result(FlutterError(code: codeMsg, message: messageMsg, details: context.debugDescription))
+                return
+            } catch DecodingError.valueNotFound(let type, let context) {
+                result(FlutterError(code: codeMsg, message: messageMsg, details: context.debugDescription))
+                return
+            } catch {
+                result(FlutterError(code: codeMsg, message: messageMsg, details: error.localizedDescription))
+                return
+            }
+            if selectionBehavior.maxZoom == 999 {
+                selectionBehavior.maxZoom = .nan
             }
 
             // Find the location if possible
@@ -490,9 +510,29 @@ public class MapControlMethodChannel: NSObject {
                 return
             }
 
-            guard let filterBehavior = try? JSONDecoder().decode(MPFilterBehavior.self, from: behaviorJson.data(using: .utf8)!) else {
-                result(FlutterError(code: "Could not parse filterBehavior", message: "MPC_setFilter", details: nil))
+            let codeMsg = "Could not parse filterBehavior"
+            let messageMsg = "MPC_setFilter"
+            var filterBehavior: MPFilterBehavior
+            do {
+                filterBehavior = try JSONDecoder().decode(MPFilterBehavior.self, from: behaviorJson.data(using: .utf8)!)
+            } catch DecodingError.dataCorrupted(let context) {
+                result(FlutterError(code: codeMsg, message: messageMsg, details: context.debugDescription))
                 return
+            } catch DecodingError.keyNotFound(let type, let context) {
+                result(FlutterError(code: codeMsg, message: messageMsg, details: context.debugDescription))
+                return
+            } catch DecodingError.typeMismatch(let type, let context) {
+                result(FlutterError(code: codeMsg, message: messageMsg, details: context.debugDescription))
+                return
+            } catch DecodingError.valueNotFound(let type, let context) {
+                result(FlutterError(code: codeMsg, message: messageMsg, details: context.debugDescription))
+                return
+            } catch {
+                result(FlutterError(code: codeMsg, message: messageMsg, details: error.localizedDescription))
+                return
+            }
+            if filterBehavior.maxZoom == 999 {
+                filterBehavior.maxZoom = .nan
             }
 
             mapsIndoorsData.mapControl?.setFilter(filter: filter, behavior: filterBehavior)
@@ -634,13 +674,8 @@ public class MapControlMethodChannel: NSObject {
             }
 
             do {
-                if let duration = arguments?["duration"] as? Int {
-                    // Animate the camera
-                    try mapsIndoorsData.mapView?.animateCamera(cameraUpdate: cameraUpdate, duration: duration)
-                } else {
-                    // Move the camera
-                    try mapsIndoorsData.mapView?.moveCamera(cameraUpdate: cameraUpdate)
-                }
+                let duration = arguments?["duration"] as? Int ?? 0
+                try mapsIndoorsData.mapView?.animateCamera(cameraUpdate: cameraUpdate, duration: duration)
                 result(nil)
             } catch {
                 result(FlutterError(code: "Could not make camera update", message: "MPC_moveCamera", details: nil))
@@ -717,9 +752,30 @@ public class MapControlMethodChannel: NSObject {
                 result(FlutterError(code: "Could not read behavior", message: "MPC_setHighlight", details: nil))
                 return
             }
-            guard let highlightBehavior = try? JSONDecoder().decode(MPHighlightBehavior.self, from: behaviorData) else {
-                result(FlutterError(code: "Could not parse highlight behavior", message: "MPC_setHighlight", details: nil))
+
+            let codeMsg = "Could not parse highlight behavior"
+            let messageMsg = "MPC_setHighlight"
+            var highlightBehavior: MPHighlightBehavior
+            do {
+                highlightBehavior = try JSONDecoder().decode(MPHighlightBehavior.self, from: behaviorData)
+            } catch DecodingError.dataCorrupted(let context) {
+                result(FlutterError(code: codeMsg, message: messageMsg, details: context.debugDescription))
                 return
+            } catch DecodingError.keyNotFound(let type, let context) {
+                result(FlutterError(code: codeMsg, message: messageMsg, details: context.debugDescription))
+                return
+            } catch DecodingError.typeMismatch(let type, let context) {
+                result(FlutterError(code: codeMsg, message: messageMsg, details: context.debugDescription))
+                return
+            } catch DecodingError.valueNotFound(let type, let context) {
+                result(FlutterError(code: codeMsg, message: messageMsg, details: context.debugDescription))
+                return
+            } catch {
+                result(FlutterError(code: codeMsg, message: messageMsg, details: error.localizedDescription))
+                return
+            }
+            if highlightBehavior.maxZoom == 999 {
+                highlightBehavior.maxZoom = .nan
             }
 
             let locationsFilter = MPFilter()
