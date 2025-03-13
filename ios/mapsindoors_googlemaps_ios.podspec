@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'mapsindoors_googlemaps_ios'
-  s.version          = '4.1.4'
+  s.version          = '4.1.5'
   s.summary          = 'Mapsindoors flutter plugin'
   s.homepage         = 'http://mapspeople.com'
   s.license          = { file: '../LICENSE' }

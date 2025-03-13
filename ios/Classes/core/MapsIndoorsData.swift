@@ -46,7 +46,7 @@ public class MapsIndoorsData: NSObject {
 
     var directionsRenderer: MPDirectionsRenderer?
 
-    weak var floorSelector: MPCustomFloorSelector?
+    var floorSelector: MPCustomFloorSelector?
 }
 
 public class CustomFloorSelector: UIView, MPCustomFloorSelector {
@@ -54,7 +54,13 @@ public class CustomFloorSelector: UIView, MPCustomFloorSelector {
 
     public weak var methodChannel: FlutterMethodChannel?
 
-    public weak var building: MapsIndoors.MPBuilding?
+    public weak var building: MapsIndoors.MPBuilding? {
+        didSet {
+            if oldValue?.buildingId != building?.buildingId {
+                onShow()
+            }
+        }
+    }
 
     public var delegate: MapsIndoors.MPFloorSelectorDelegate?
 
@@ -91,6 +97,10 @@ public class CustomFloorSelector: UIView, MPCustomFloorSelector {
     public func onUserPositionFloorChange(floorIndex: Int) {
         methodChannel?.invokeMethod("setUserPositionFloor", arguments: floorIndex)
     }
+    
+    func onZoomLevelChanged(zoom: Float) {
+        methodChannel?.invokeMethod("zoomLevelChanged", arguments: zoom)
+    }
 }
 
 public class FloorSelectorDelegate: MPFloorSelectorDelegate {
@@ -111,8 +121,8 @@ public class FlutterPositionProvider: MPPositionProvider {
     public var latestPosition: MapsIndoors.MPPositionResult?
 
     public var name = "default"
-    public var delegate: MapsIndoors.MPPositionProviderDelegate?
-    public var mapsIndoorsData: MapsIndoorsData?
+    public weak var delegate: MapsIndoors.MPPositionProviderDelegate?
+    public weak var mapsIndoorsData: MapsIndoorsData?
 
     public func setLatestPosition(positionResult: MPPositionResult) {
         if latestPosition?.floorIndex != positionResult.floorIndex {
@@ -147,7 +157,8 @@ public class MapControlLiveDataDelegate: LiveDataDelegate {
 }
 
 public class MapControlDelegate: MPMapControlDelegate {
-    var methodChannel: FlutterMethodChannel
+    private var methodChannel: FlutterMethodChannel
+    private weak var mapsIndoorsData: MapsIndoorsData?
 
     var respondToTap = false
     var consumeTap = false
@@ -168,8 +179,9 @@ public class MapControlDelegate: MPMapControlDelegate {
 
     var respondToCameraEvents = false
 
-    init(methodChannel: FlutterMethodChannel) {
+    init(methodChannel: FlutterMethodChannel, miData: MapsIndoorsData) {
         self.methodChannel = methodChannel
+        self.mapsIndoorsData = miData
     }
 
     public func didTap(coordinate: MPPoint) -> Bool {
@@ -256,8 +268,17 @@ public class MapControlDelegate: MPMapControlDelegate {
         }
         return false
     }
-
+    
+    private var zoom: Float = 0.0
     public func didChangeCameraPosition() -> Bool {
+        let z = mapsIndoorsData?.mapControl?.mapsIndoorsZoom ?? zoom
+        if z != zoom {
+            zoom = z
+            if let floorSelector = mapsIndoorsData?.floorSelector as? CustomFloorSelector {
+                floorSelector.onZoomLevelChanged(zoom: z)
+            }
+        }
+
         if respondToCameraEvents {
             methodChannel.invokeMethod(FlutterCallback.onCameraEvent.description, arguments: 5) // Corresponds to Android MPCameraEvent.ON_MOVE
         }

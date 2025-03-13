@@ -13,7 +13,6 @@ import MapsIndoorsCore
 import MapsIndoorsCodable
 
 public class MapControlListenerMethodChannel: NSObject {
-    
    
     enum Methods: String {
         case MPL_cameraEventListener
@@ -34,7 +33,7 @@ public class MapControlListenerMethodChannel: NSObject {
             }
             
             if (mapsIndoorsData.mapControlListenerDelegate == nil) {
-                mapsIndoorsData.mapControlListenerDelegate = MapControlDelegate(methodChannel: methodChannel!)
+                mapsIndoorsData.mapControlListenerDelegate = MapControlDelegate(methodChannel: methodChannel!, miData: mapsIndoorsData)
             }
             mapsIndoorsData.mapControl?.delegate = mapsIndoorsData.mapControlListenerDelegate
             
