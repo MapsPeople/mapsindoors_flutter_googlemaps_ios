@@ -262,6 +262,9 @@ public class MapsIndoorsMethodChannel: NSObject {
             {
                 let query = MPQuery()
                 let filter = MPFilter()
+
+                filter.ignoreSearchableStatus = true
+                filter.ignoreActiveStatus = true
                 
                 let locations = await MPMapsIndoors.shared.locationsWith(query: query, filter: filter);
                 let locationsCodable = locations.map { MPLocationCodable(withLocation: $0) }
