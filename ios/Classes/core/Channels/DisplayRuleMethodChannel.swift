@@ -39,6 +39,7 @@ public class DisplayRuleMethodChannel: NSObject {
         case DRU_getLabelStyleHaloBlur
         case DRU_getLabelStyleHaloColor
         case DRU_getLabelStyleHaloWidth
+        case DRU_getLabelStylePosition
         case DRU_getLabelStyleTextColor
         case DRU_getLabelStyleTextOpacity
         case DRU_getLabelStyleTextSize
@@ -110,6 +111,7 @@ public class DisplayRuleMethodChannel: NSObject {
         case DRU_setLabelStyleHaloBlur
         case DRU_setLabelStyleHaloColor
         case DRU_setLabelStyleHaloWidth
+        case DRU_setLabelStylePosition
         case DRU_setLabelStyleTextColor
         case DRU_setLabelStyleTextOpacity
         case DRU_setLabelStyleTextSize
@@ -178,6 +180,7 @@ public class DisplayRuleMethodChannel: NSObject {
             case .DRU_getLabelStyleHaloBlur: runner = getLabelStyleHaloBlur
             case .DRU_getLabelStyleHaloColor: runner = getLabelStyleHaloColor
             case .DRU_getLabelStyleHaloWidth: runner = getLabelStyleHaloWidth
+            case .DRU_getLabelStylePosition: runner = getLabelStylePosition
             case .DRU_getLabelStyleTextColor: runner = getLabelStyleTextColor
             case .DRU_getLabelStyleTextOpacity: runner = getLabelStyleTextOpacity
             case .DRU_getLabelStyleTextSize: runner = getLabelStyleTextSize
@@ -249,6 +252,7 @@ public class DisplayRuleMethodChannel: NSObject {
             case .DRU_setLabelStyleHaloBlur: runner = setLabelStyleHaloBlur
             case .DRU_setLabelStyleHaloColor: runner = setLabelStyleHaloColor
             case .DRU_setLabelStyleHaloWidth: runner = setLabelStyleHaloWidth
+            case .DRU_setLabelStylePosition: runner = setLabelStylePosition
             case .DRU_setLabelStyleTextColor: runner = setLabelStyleTextColor
             case .DRU_setLabelStyleTextOpacity: runner = setLabelStyleTextOpacity
             case .DRU_setLabelStyleTextSize: runner = setLabelStyleTextSize
@@ -1071,6 +1075,14 @@ public class DisplayRuleMethodChannel: NSObject {
             result(nil)
         }
         
+        func setLabelStylePosition(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let (displayRule, value) = displayRuleAndValueFor(property: "position", type: Int.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setLabelStylePosition, result: result) else {
+                return
+            }
+            displayRule.labelStylePosition = MPLabelPosition.fromInt(value)
+            result(nil)
+        }
+        
         func setLabelStyleTextColor(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
             guard let (displayRule, value) = displayRuleAndValueFor(property: "color", type: String.self, arguments: arguments, mapsIndoorsData: mapsIndoorsData, method: .DRU_setLabelStyleTextColor, result: result) else {
                 return
@@ -1220,6 +1232,11 @@ public class DisplayRuleMethodChannel: NSObject {
             result(displayRule.labelStyleHaloWidth)
         }
         
+        func getLabelStylePosition(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getLabelStylePosition, result: result) else { return }
+            result(displayRule.labelStylePosition.asInt)
+        }
+
         func getLabelStyleTextColor(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
             guard let displayRule = displayRuleFor(arguments: arguments, method: .DRU_getLabelStyleTextColor, result: result) else { return }
             result(hexStringFromColor(color: displayRule.labelStyleTextColor!))
@@ -1292,4 +1309,26 @@ struct MPLabelGraphic: Codable {
     var content: [Int]
     var stretchX: [[Int]]
     var stretchY: [[Int]]
+}
+
+extension MPLabelPosition {
+    var asInt: Int {
+        switch self {
+        case .left: 0
+        case .top: 1
+        case .bottom: 2
+        case .right: 3
+        @unknown default: 2
+        }
+    }
+    
+    static func fromInt(_ value: Int) -> MPLabelPosition {
+        switch value {
+        case 0: .left
+        case 1: .top
+        case 2: .bottom
+        case 3: .right
+        default: .bottom
+        }
+    }
 }

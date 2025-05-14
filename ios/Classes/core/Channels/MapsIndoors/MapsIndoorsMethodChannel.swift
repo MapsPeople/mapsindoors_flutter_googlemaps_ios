@@ -470,16 +470,16 @@ public class MapsIndoorsMethodChannel: NSObject {
                 return
             }
             
-            if(remove) {
+            if remove {
                 mapsIndoorsData.positionProvider = nil
-                mapsIndoorsData.mapControl?.positionProvider = nil
+                MPMapsIndoors.shared.positionProvider = nil
             } else {
                 let provider = FlutterPositionProvider()
                 provider.name = name
                 provider.mapsIndoorsData = mapsIndoorsData
                 mapsIndoorsData.mapControl?.showUserPosition = true
                 mapsIndoorsData.positionProvider = provider
-                mapsIndoorsData.mapControl?.positionProvider = provider
+                MPMapsIndoors.shared.positionProvider = provider
             }
         }
         
