@@ -839,7 +839,26 @@ public class MapControlMethodChannel: NSObject {
 
         func getHiddenFeatures(arguments _: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
             let hiddenFeatures = mapsIndoorsData.mapControl?.hiddenFeatures
-            result(hiddenFeatures)
+            var features = [Int]()
+            for feature in hiddenFeatures ?? [] {
+                switch feature {
+                case .model2D:
+                    features.append(0)
+                case .walls2D:
+                    features.append(1)
+                case .model3D:
+                    features.append(2)
+                case .walls3D:
+                    features.append(3)
+                case .extrusion3D:
+                    features.append(4)
+                case .extrudedBuildings:
+                    features.append(5)
+                default:
+                    continue
+                }
+            }
+            result(features)
         }
 
         func setHiddenFeatures(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
@@ -853,7 +872,28 @@ public class MapControlMethodChannel: NSObject {
                 return
             }
 
-            mapsIndoorsData.mapControl?.hiddenFeatures = features
+            var featureTypes = [MPFeatureType]()
+
+            for feature in features {
+                switch feature {
+                case 0:
+                    featureTypes.append(.model2D)
+                case 1:
+                    featureTypes.append(.walls2D)
+                case 2:
+                    featureTypes.append(.model3D)
+                case 3:
+                    featureTypes.append(.walls3D)
+                case 4:
+                    featureTypes.append(.extrusion3D)
+                case 5:
+                    featureTypes.append(.extrudedBuildings)
+                default:
+                    continue
+                }
+            }
+
+            mapsIndoorsData.mapControl?.hiddenFeatures = featureTypes
             result(nil)
         }
 
