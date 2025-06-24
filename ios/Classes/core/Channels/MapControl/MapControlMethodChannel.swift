@@ -838,26 +838,23 @@ public class MapControlMethodChannel: NSObject {
         }
 
         func getHiddenFeatures(arguments _: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            let hiddenFeatures = mapsIndoorsData.mapControl?.hiddenFeatures
-            var features = [Int]()
-            for feature in hiddenFeatures ?? [] {
+            guard let hiddenFeatures = mapsIndoorsData.mapControl?.hiddenFeatures.map({ MPFeatureType(rawValue: $0) }) else {
+                result([])
+                return
+            }
+
+            let features: [Int] = hiddenFeatures.compactMap { feature in
                 switch feature {
-                case .model2D:
-                    features.append(0)
-                case .walls2D:
-                    features.append(1)
-                case .model3D:
-                    features.append(2)
-                case .walls3D:
-                    features.append(3)
-                case .extrusion3D:
-                    features.append(4)
-                case .extrudedBuildings:
-                    features.append(5)
-                default:
-                    continue
+                case .model2D: 0
+                case .walls2D: 1
+                case .model3D: 2
+                case .walls3D: 3
+                case .extrusion3D: 4
+                case .extrudedBuildings: 5
+                default: nil
                 }
             }
+
             result(features)
         }
 
@@ -872,26 +869,17 @@ public class MapControlMethodChannel: NSObject {
                 return
             }
 
-            var featureTypes = [MPFeatureType]()
-
-            for feature in features {
+            let featureTypes: [Int] = features.compactMap { feature in
                 switch feature {
-                case 0:
-                    featureTypes.append(.model2D)
-                case 1:
-                    featureTypes.append(.walls2D)
-                case 2:
-                    featureTypes.append(.model3D)
-                case 3:
-                    featureTypes.append(.walls3D)
-                case 4:
-                    featureTypes.append(.extrusion3D)
-                case 5:
-                    featureTypes.append(.extrudedBuildings)
-                default:
-                    continue
+                case 0: MPFeatureType.model2D
+                case 1: MPFeatureType.walls2D
+                case 2: MPFeatureType.model3D
+                case 3: MPFeatureType.walls3D
+                case 4: MPFeatureType.extrusion3D
+                case 5: MPFeatureType.extrudedBuildings
+                default: nil
                 }
-            }
+            }.map(\.rawValue)
 
             mapsIndoorsData.mapControl?.hiddenFeatures = featureTypes
             result(nil)
