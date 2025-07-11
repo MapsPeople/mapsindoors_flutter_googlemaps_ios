@@ -82,24 +82,32 @@ public class CustomFloorSelector: UIView, MPCustomFloorSelector {
             let floors = building.floors?.values.map { MPFloorCodable(withFloor: $0) }
             if let jsonData = try? JSONEncoder().encode(floors) {
                 let resultJson = String(decoding: jsonData, as: UTF8.self)
-                methodChannel?.invokeMethod("setList", arguments: resultJson)
+                Task { @MainActor in
+                    methodChannel?.invokeMethod("setList", arguments: resultJson)
+                }
             }
         }
-        let map = ["show": true]
-        methodChannel?.invokeMethod("show", arguments: map)
+        Task { @MainActor in
+            methodChannel?.invokeMethod("show", arguments: ["show": true])
+        }
     }
 
     public func onHide() {
-        let map = ["show": false]
-        methodChannel?.invokeMethod("show", arguments: map)
+        Task { @MainActor in
+            methodChannel?.invokeMethod("show", arguments: ["show": false])
+        }
     }
 
     public func onUserPositionFloorChange(floorIndex: Int) {
-        methodChannel?.invokeMethod("setUserPositionFloor", arguments: floorIndex)
+        Task { @MainActor in
+            methodChannel?.invokeMethod("setUserPositionFloor", arguments: floorIndex)
+        }
     }
     
     func onZoomLevelChanged(zoom: Float) {
-        methodChannel?.invokeMethod("zoomLevelChanged", arguments: zoom)
+        Task { @MainActor in
+            methodChannel?.invokeMethod("zoomLevelChanged", arguments: zoom)
+        }
     }
 }
 
@@ -143,15 +151,14 @@ public class MapControlLiveDataDelegate: LiveDataDelegate {
     }
 
     func dataReceived(liveUpdate: MapsIndoors.MPLiveUpdate) {
-        let domain = liveUpdate.topic.domainType
-        let location = MPMapsIndoors.shared.locationWith(locationId: liveUpdate.itemId)
-        if location != nil, domain != nil {
-            let locationData = try? JSONEncoder().encode(MPLocationCodable(withLocation: location!))
-            if let locationData {
-                let locationString = String(decoding: locationData, as: UTF8.self)
-                let map = ["location": locationString, "domainType": domain]
-                methodChannel?.invokeMethod("onLiveLocationUpdate", arguments: map)
-            }
+        guard let location = MPMapsIndoors.shared.locationWith(locationId: liveUpdate.itemId), let domain = liveUpdate.topic.domainType else { return }
+
+        guard let locationData = try? JSONEncoder().encode(MPLocationCodable(withLocation: location)) else { return }
+
+        let locationString = String(decoding: locationData, as: UTF8.self)
+        let map = ["location": locationString, "domainType": domain]
+        Task { @MainActor in
+            methodChannel?.invokeMethod("onLiveLocationUpdate", arguments: map)
         }
     }
 }
@@ -190,7 +197,9 @@ public class MapControlDelegate: MPMapControlDelegate {
             if let pointData = try? JSONEncoder().encode(coordinate) {
                 map["point"] = String(decoding: pointData, as: UTF8.self)
             }
-            methodChannel.invokeMethod(FlutterCallback.onMapClick.description, arguments: map)
+            Task { @MainActor in
+                methodChannel.invokeMethod(FlutterCallback.onMapClick.description, arguments: map)
+            }
             return consumeTap
         } else {
             return false
@@ -198,73 +207,84 @@ public class MapControlDelegate: MPMapControlDelegate {
     }
 
     public func didTapIcon(location: MPLocation) -> Bool {
-        if respondToTapIcon {
+        guard respondToTapIcon else { return false }
+
+        Task { @MainActor in
             methodChannel.invokeMethod(FlutterCallback.onMarkerClick.description, arguments: location.locationId)
-            return consumeTapIcon
-        } else {
-            return false
         }
+        return consumeTapIcon
     }
 
     public func didChange(floorIndex: Int) -> Bool {
         if respondToDidChangeFloorIndex {
-            methodChannel.invokeMethod(FlutterCallback.onFloorUpdate.description, arguments: floorIndex)
+            Task { @MainActor in
+                methodChannel.invokeMethod(FlutterCallback.onFloorUpdate.description, arguments: floorIndex)
+            }
         }
         return false
     }
 
     public func didChange(selectedVenue: MPVenue?) -> Bool {
-        if respondToDidChangeVenue {
-            var venueString: String?
-            if let selectedVenue, let venueData = try? JSONEncoder().encode(MPVenueCodable(withVenue: selectedVenue)) {
-                venueString = String(decoding: venueData, as: UTF8.self)
-            }
+        guard let selectedVenue, respondToDidChangeVenue else { return false }
+        
+        guard let venueData = try? JSONEncoder().encode(MPVenueCodable(withVenue: selectedVenue)) else { return false }
+        
+        let venueString = String(decoding: venueData, as: UTF8.self)
+        Task { @MainActor in
             methodChannel.invokeMethod(FlutterCallback.onVenueFoundAtCameraTarget.description, arguments: venueString)
         }
         return false
     }
-
+    
     public func didChange(selectedBuilding: MPBuilding?) -> Bool {
-        if respondToDidChangeBuilding {
-            var buildingString: String?
-            if let selectedBuilding,
-               let buildingData = try? JSONEncoder().encode(MPBuildingCodable(withBuilding: selectedBuilding)) {
-                buildingString = String(decoding: buildingData, as: UTF8.self)
-            }
+        guard let selectedBuilding, respondToDidChangeBuilding else { return false }
+        
+        guard let buildingData = try? JSONEncoder().encode(MPBuildingCodable(withBuilding: selectedBuilding)) else { return false }
+        
+        let buildingString = String(decoding: buildingData, as: UTF8.self)
+        Task { @MainActor in
             methodChannel.invokeMethod(FlutterCallback.onBuildingFoundAtCameraTarget.description, arguments: buildingString)
         }
+        
         return false
     }
 
     public func didChange(selectedLocation: MPLocation?) -> Bool {
-        if respondToDidChangeLocation {
-            var locationString: String?
-            if let selectedLocation,
-               let locationData = try? JSONEncoder().encode(MPLocationCodable(withLocation: selectedLocation)) {
-                locationString = String(decoding: locationData, as: UTF8.self)
-            }
+        guard let selectedLocation = selectedLocation, respondToDidChangeLocation else { return false }
+        
+        guard let locationData = try? JSONEncoder().encode(MPLocationCodable(withLocation: selectedLocation)) else { return false }
+        
+        let locationString = String(decoding: locationData, as: UTF8.self)
+        Task { @MainActor in
             methodChannel.invokeMethod(FlutterCallback.onLocationSelected.description, arguments: locationString)
         }
+        
         return false
     }
 
     public func didTapInfoWindow(location: MPLocation) -> Bool {
         if respondToDidTapInfoWindow {
-            methodChannel.invokeMethod(FlutterCallback.onInfoWindowClick.description, arguments: location.locationId)
+            Task { @MainActor in
+                methodChannel.invokeMethod(FlutterCallback.onInfoWindowClick.description, arguments: location.locationId)
+            }
         }
         return false
     }
 
     public func cameraIdle() -> Bool {
         if respondToCameraEvents {
-            methodChannel.invokeMethod(FlutterCallback.onCameraEvent.description, arguments: 7) // Corresponds to Android MPCameraEvent.IDLE
+            Task { @MainActor in
+                methodChannel.invokeMethod(FlutterCallback.onCameraEvent.description, arguments: 7) // Corresponds to Android MPCameraEvent.IDLE
+            }
         }
         return false
     }
 
     public func cameraWillMove() -> Bool {
         if respondToCameraEvents {
-            methodChannel.invokeMethod(FlutterCallback.onCameraEvent.description, arguments: 5) // Corresponds to Android MPCameraEvent.ON_MOVE
+            Task { @MainActor in
+                methodChannel.invokeMethod(FlutterCallback.onCameraEvent.description, arguments: 5) // Corresponds to Android MPCameraEvent.ON_MOVE
+            }
         }
         return false
     }
@@ -280,7 +300,9 @@ public class MapControlDelegate: MPMapControlDelegate {
         }
 
         if respondToCameraEvents {
-            methodChannel.invokeMethod(FlutterCallback.onCameraEvent.description, arguments: 5) // Corresponds to Android MPCameraEvent.ON_MOVE
+            Task { @MainActor in
+                methodChannel.invokeMethod(FlutterCallback.onCameraEvent.description, arguments: 5) // Corresponds to Android MPCameraEvent.ON_MOVE
+            }
         }
         return false
     }

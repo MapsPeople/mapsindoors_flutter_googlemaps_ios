@@ -838,24 +838,12 @@ public class MapControlMethodChannel: NSObject {
         }
 
         func getHiddenFeatures(arguments _: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let hiddenFeatures = mapsIndoorsData.mapControl?.hiddenFeatures.map({ MPFeatureType(rawValue: $0) }) else {
+            guard let hiddenFeatures = mapsIndoorsData.mapControl?.hiddenFeatures.compactMap({ MPFeatureType(rawValue: $0) }) else {
                 result([])
                 return
             }
 
-            let features: [Int] = hiddenFeatures.compactMap { feature in
-                switch feature {
-                case .model2D: 0
-                case .walls2D: 1
-                case .model3D: 2
-                case .walls3D: 3
-                case .extrusion3D: 4
-                case .extrudedBuildings: 5
-                default: nil
-                }
-            }
-
-            result(features)
+            result(MPFeatureType.fixMapping(hiddenFeatures))
         }
 
         func setHiddenFeatures(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
@@ -869,19 +857,7 @@ public class MapControlMethodChannel: NSObject {
                 return
             }
 
-            let featureTypes: [Int] = features.compactMap { feature in
-                switch feature {
-                case 0: MPFeatureType.model2D
-                case 1: MPFeatureType.walls2D
-                case 2: MPFeatureType.model3D
-                case 3: MPFeatureType.walls3D
-                case 4: MPFeatureType.extrusion3D
-                case 5: MPFeatureType.extrudedBuildings
-                default: nil
-                }
-            }.map(\.rawValue)
-
-            mapsIndoorsData.mapControl?.hiddenFeatures = featureTypes
+            mapsIndoorsData.mapControl?.hiddenFeatures = MPFeatureType.fixMapping(features)
             result(nil)
         }
 

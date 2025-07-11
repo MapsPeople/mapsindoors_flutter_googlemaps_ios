@@ -78,12 +78,14 @@ public class DirectionsRendererMethodChannel: NSObject {
 
                 return
             }
-            let success = renderer.nextLeg()
+            _ = renderer.nextLeg()
 
             renderer.animate(duration: 5)
 
             if DirectionsRendererMethodChannel.isListeningForLegChanges {
-                mapsIndoorsData.directionsRendererMethodChannel?.invokeMethod("onLegSelected", arguments: renderer.routeLegIndex)
+                Task { @MainActor in
+                    mapsIndoorsData.directionsRendererMethodChannel?.invokeMethod("onLegSelected", arguments: renderer.routeLegIndex)
+                }
             }
 
             result(nil)
@@ -94,12 +96,14 @@ public class DirectionsRendererMethodChannel: NSObject {
                 result(FlutterError(code: "Unable to change leg: The directionsRenderer is not set", message: "DRE_previousLeg", details: nil))
                 return
             }
-            let success = renderer.previousLeg()
+            let _ = renderer.previousLeg()
 
             renderer.animate(duration: 5)
 
             if DirectionsRendererMethodChannel.isListeningForLegChanges {
-                mapsIndoorsData.directionsRendererMethodChannel?.invokeMethod("onLegSelected", arguments: renderer.routeLegIndex)
+                Task { @MainActor in
+                    mapsIndoorsData.directionsRendererMethodChannel?.invokeMethod("onLegSelected", arguments: renderer.routeLegIndex)
+                }
             }
 
             result(nil)
@@ -141,7 +145,9 @@ public class DirectionsRendererMethodChannel: NSObject {
             renderer.animate(duration: 5)
 
             if DirectionsRendererMethodChannel.isListeningForLegChanges {
-                mapsIndoorsData.directionsRendererMethodChannel?.invokeMethod("onLegSelected", arguments: renderer.routeLegIndex)
+                Task { @MainActor in
+                    mapsIndoorsData.directionsRendererMethodChannel?.invokeMethod("onLegSelected", arguments: renderer.routeLegIndex)
+                }
             }
 
             result(nil)

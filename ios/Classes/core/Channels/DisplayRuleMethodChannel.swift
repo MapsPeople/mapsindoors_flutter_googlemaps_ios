@@ -1153,6 +1153,7 @@ public class DisplayRuleMethodChannel: NSObject {
             refreshTimerWorkItem?.cancel()
 
             refreshTimerWorkItem = DispatchWorkItem {
+                guard refreshTimerWorkItem?.isCancelled == false else { return }
                 mapsIndoorsData.mapControl?.refresh()
             }
             

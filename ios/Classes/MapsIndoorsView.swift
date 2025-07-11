@@ -38,6 +38,7 @@ class FLNativeView: NSObject, FlutterPlatformView, MPMapControlDelegate, Flutter
     private var _GMSView: GMSMapView
     private var mapsIndoorsData: MapsIndoorsData
     private var mapConfig: MPMapConfigCodable?
+    private var arguments: [String: Any]?
     private let googleApiKey = Bundle.main.object(forInfoDictionaryKey: "GoogleMapsAPIKey") as? String ?? ""
     
     init(
@@ -46,7 +47,7 @@ class FLNativeView: NSObject, FlutterPlatformView, MPMapControlDelegate, Flutter
         binaryMessenger messenger: FlutterBinaryMessenger?,
         mapsIndoorsData: MapsIndoorsData
     ) {
-        let arguments = args as? [String: Any]
+        arguments = args as? [String: Any]
         self.mapsIndoorsData = mapsIndoorsData;
         GMSServices.provideAPIKey(googleApiKey)
 
@@ -85,6 +86,9 @@ class FLNativeView: NSObject, FlutterPlatformView, MPMapControlDelegate, Flutter
         DispatchQueue.main.async { [self] in
             let config = MPMapConfig(gmsMapView: _GMSView, googleApiKey: googleApiKey)
             if let mapControl = MPMapsIndoors.createMapControl(mapConfig: config) {
+                if let featureArgs = arguments?["features"] as? [Int] {
+                    mapControl.hiddenFeatures = MPFeatureType.fixMapping(featureArgs)
+                }
                 mapControl.showUserPosition = mapConfig?.showUserPosition ?? false
                 mapsIndoorsData.mapControl = mapControl
                 mapsIndoorsData.directionsRenderer = nil
@@ -174,4 +178,34 @@ private class MPMapConfigCodable: Codable {
     var showInfoWindowOnLocationClicked: Bool?
     var showUserPosition: Bool?
     var useDefaultMapsIndoorsStyle: Bool?
+}
+
+extension MPFeatureType {
+    static func fixMapping(_ features: [Int]) -> [Int] {
+        features.compactMap { feature in
+            switch feature {
+            case 0: MPFeatureType.model2D
+            case 1: MPFeatureType.walls2D
+            case 2: MPFeatureType.model3D
+            case 3: MPFeatureType.walls3D
+            case 4: MPFeatureType.extrusion3D
+            case 5: MPFeatureType.extrudedBuildings
+            default: nil
+            }
+        }.map(\.rawValue)
+    }
+    
+    static func fixMapping(_ features: [MPFeatureType]) -> [Int] {
+        features.compactMap { feature in
+            switch feature {
+            case .model2D: 0
+            case .walls2D: 1
+            case .model3D: 2
+            case .walls3D: 3
+            case .extrusion3D: 4
+            case .extrudedBuildings: 5
+            default: nil
+            }
+        }
+    }
 }

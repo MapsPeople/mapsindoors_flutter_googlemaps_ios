@@ -70,10 +70,12 @@ public class MapsIndoorsListenerChannel: NSObject {
         }
 
         func isReady(error: MPError?) {
-            if error == MPError.invalidApiKey || error == MPError.networkError || error == MPError.unknownError {
-                methodChannel.invokeMethod("onMapsIndoorsReady", arguments: error)
-            } else {
-                methodChannel.invokeMethod("onMapsIndoorsReady", arguments: nil)
+            Task { @MainActor in
+                if error == MPError.invalidApiKey || error == MPError.networkError || error == MPError.unknownError {
+                    methodChannel.invokeMethod("onMapsIndoorsReady", arguments: error)
+                } else {
+                    methodChannel.invokeMethod("onMapsIndoorsReady", arguments: nil)
+                }
             }
         }
     }

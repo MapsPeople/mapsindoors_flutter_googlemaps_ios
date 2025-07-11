@@ -1,6 +1,6 @@
 name: mapsindoors_googlemaps_ios
 description: iOS implementation of the mapsindoors plugin
-version: 4.2.3
+version: 4.2.4
 repository: https://github.com/MapsPeople/mapsindoors_flutter_googlemaps_ios
 homepage: https://www.mapsindoors.com/
 
@@ -18,7 +18,7 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  mapsindoors_platform_interface: ^4.2.3
+  mapsindoors_platform_interface: ^4.2.4
 
 dev_dependencies:
   flutter_test:
