@@ -51,6 +51,7 @@ public class MapsIndoorsMethodChannel: NSObject {
         case MIN_getSyncedVenues
         case MIN_addVenuesToSync
         case MIN_removeVenuesToSync
+        case MIN_enableDebugLogging
         
         func call(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
             let runner: (_ arguments: [String: Any]?, _ mapsIndoorsData: MapsIndoorsData, _ result: @escaping FlutterResult) -> Void
@@ -91,6 +92,7 @@ public class MapsIndoorsMethodChannel: NSObject {
             case .MIN_getSyncedVenues:              runner = getSyncedVenues
             case .MIN_addVenuesToSync:              runner = addVenuesToSync
             case .MIN_removeVenuesToSync:           runner = removeVenuesToSync
+            case .MIN_enableDebugLogging:           runner = enableDebugLogging
             }
             
             runner(arguments, mapsIndoorsData, result)
@@ -550,6 +552,20 @@ public class MapsIndoorsMethodChannel: NSObject {
                     result(error.localizedDescription)
                 }
             }
+        }
+
+        func enableDebugLogging(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let enable = args["enable"] as? Bool else {
+                result(FlutterError(code: "Could not read enable argument", message: "MIN_enableDebugLogging", details: nil))
+                return
+            }
+            
+            if (enable) {
+                MPLog.logLevel = .debug
+            } else {
+                MPLog.logLevel = .info
+            }
+            result(nil)
         }
     }
 }
