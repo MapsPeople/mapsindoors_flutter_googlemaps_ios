@@ -555,7 +555,7 @@ public class MapsIndoorsMethodChannel: NSObject {
         }
 
         func enableDebugLogging(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let enable = args["enable"] as? Bool else {
+            guard let enable = arguments?["enable"] as? Bool else {
                 result(FlutterError(code: "Could not read enable argument", message: "MIN_enableDebugLogging", details: nil))
                 return
             }
