@@ -858,6 +858,7 @@ public class MapControlMethodChannel: NSObject {
             }
 
             mapsIndoorsData.mapControl?.hiddenFeatures = MPFeatureType.fixMapping(features)
+            mapsIndoorsData.mapControl?.refresh()
             result(nil)
         }
 

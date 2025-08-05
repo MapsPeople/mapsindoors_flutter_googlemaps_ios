@@ -88,6 +88,7 @@ class FLNativeView: NSObject, FlutterPlatformView, MPMapControlDelegate, Flutter
             if let mapControl = MPMapsIndoors.createMapControl(mapConfig: config) {
                 if let featureArgs = arguments?["features"] as? [Int] {
                     mapControl.hiddenFeatures = MPFeatureType.fixMapping(featureArgs)
+                    mapControl.refresh()
                 }
                 mapControl.showUserPosition = mapConfig?.showUserPosition ?? false
                 mapsIndoorsData.mapControl = mapControl
