@@ -254,12 +254,12 @@ public class MapControlMethodChannel: NSObject {
         }
 
         func goTo(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            guard let args = arguments as? [String: String], let entityJson = args["entity"] else {
+            guard let entityJson = arguments?["entity"] as? String else {
                 result(nil)
                 return
             }
 
-            guard let type = args["type"] else {
+            guard let type = arguments?["type"] as? String else {
                 result(FlutterError(code: "Could not read type", message: "MPC_goTo", details: nil))
                 return
             }
@@ -303,7 +303,11 @@ public class MapControlMethodChannel: NSObject {
                 return
             }
 
-            mapsIndoorsData.mapControl?.goTo(entity: MPEntityCodable(withEntity: entity))
+            if let maxZoom = arguments?["maxZoom"] as? Double {
+                mapsIndoorsData.mapControl?.goTo(entity: MPEntityCodable(withEntity: entity), maxZoom: maxZoom)
+            } else {
+                mapsIndoorsData.mapControl?.goTo(entity: MPEntityCodable(withEntity: entity))
+            }
             result(nil)
         }
 

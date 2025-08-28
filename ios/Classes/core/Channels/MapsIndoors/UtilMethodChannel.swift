@@ -20,6 +20,7 @@ public class UtilMethodChannel: NSObject {
         case UTL_pointAngleBetween
         case UTL_pointDistanceTo
         case UTL_polygonDistToClosestEdge
+        case UTL_setAutomatedZoomLimit
         case UTL_setCollisionHandling
         case UTL_setEnableClustering
         case UTL_setExtrusionOpacity
@@ -37,6 +38,7 @@ public class UtilMethodChannel: NSObject {
             case .UTL_pointAngleBetween: pointAngleBetween
             case .UTL_pointDistanceTo: pointDistanceTo
             case .UTL_polygonDistToClosestEdge: polygonDistToClosestEdge
+            case .UTL_setAutomatedZoomLimit: setAutomatedZoomLimit
             case .UTL_setCollisionHandling: setCollisionHandling
             case .UTL_setEnableClustering: setEnableClustering
             case .UTL_setExtrusionOpacity: setExtrusionOpacity
@@ -369,6 +371,20 @@ public class UtilMethodChannel: NSObject {
             } catch {
                 result(FlutterError(code: "Could not parse location settings", message: Methods.UTL_setTypeLocationSettingsSelectable.rawValue, details: nil))
             }
+        }
+
+        func setAutomatedZoomLimit(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
+            guard let args = arguments else {
+                result(FlutterError(code: "setAutomatedZoomLimit called without arguments", message: Methods.UTL_setAutomatedZoomLimit.rawValue, details: nil))
+                return
+            }
+            guard let limit = args["limit"] as? Double else {
+                result(FlutterError(code: "Could not read limit", message: Methods.UTL_setAutomatedZoomLimit.rawValue, details: nil))
+                return
+            }
+
+            MPMapsIndoors.shared.solution?.config.automatedZoomLimit = limit
+            result(nil)
         }
     }
 }
