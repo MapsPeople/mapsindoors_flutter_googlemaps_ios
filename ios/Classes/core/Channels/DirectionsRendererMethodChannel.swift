@@ -12,7 +12,7 @@ import MapsIndoorsCore
 import UIKit
 
 public class DirectionsRendererMethodChannel: NSObject {
-    static var isListeningForLegChanges: Bool = false
+    static var isListeningForLegChanges = false
 
     enum Methods: String {
         case DRE_clear
@@ -35,6 +35,7 @@ public class DirectionsRendererMethodChannel: NSObject {
 
             if mapsIndoorsData.mapControl != nil, mapsIndoorsData.directionsRenderer == nil {
                 mapsIndoorsData.directionsRenderer = mapsIndoorsData.mapControl?.newDirectionsRenderer()
+                mapsIndoorsData.directionsRenderer?.delegate = DirectionsRendererDelegateImplementation(mapsIndoorsData: mapsIndoorsData)
             }
 
             switch self {
@@ -282,6 +283,22 @@ public class DirectionsRendererMethodChannel: NSObject {
                 }
 
                 result(nil)
+            }
+        }
+    }
+}
+
+private class DirectionsRendererDelegateImplementation: MPDirectionsRendererDelegate {
+    private let mapsIndoorsData: MapsIndoorsData
+    
+    init(mapsIndoorsData: MapsIndoorsData) {
+        self.mapsIndoorsData = mapsIndoorsData
+    }
+    
+    public func onLegSelected(legIndex: Int) {
+        if DirectionsRendererMethodChannel.isListeningForLegChanges {
+            Task { @MainActor in
+                mapsIndoorsData.directionsRendererMethodChannel?.invokeMethod("onLegSelected", arguments: legIndex)
             }
         }
     }

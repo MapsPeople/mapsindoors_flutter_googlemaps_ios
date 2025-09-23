@@ -8,6 +8,7 @@ import Flutter
 import Foundation
 import UIKit
 import MapsIndoors
+import MapsIndoorsCore
 
 public class MapsIndoorsPlugin: NSObject, FlutterPlugin {
     
@@ -51,6 +52,9 @@ public class MapsIndoorsPlugin: NSObject, FlutterPlugin {
                 
         let factory = FLNativeViewFactory(messenger: registrar.messenger(), mapsIndoorsData: mapsIndoorsData)
         registrar.register(factory, withId: "<map-view>")
+        
+        MPLogger.sharedInstance.component = "Flutter/iOS SDK"
+        MPLogger.sharedInstance.componentVersion = "4.5.1"
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {

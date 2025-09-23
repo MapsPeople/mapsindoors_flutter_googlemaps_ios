@@ -311,14 +311,23 @@ public class DisplayRuleMethodChannel: NSObject {
         }
         
         func hexStringFromColor(color: UIColor) -> String {
-            let components = color.cgColor.components
-            let r: CGFloat = components?[0] ?? 0.0
-            let g: CGFloat = components?[1] ?? 0.0
-            let b: CGFloat = components?[2] ?? 0.0
-            
-            let hexString = String(format: "#%02lX%02lX%02lX", lroundf(Float(r * 255)), lroundf(Float(g * 255)), lroundf(Float(b * 255)))
-            print(hexString)
-            return hexString
+            //https://stackoverflow.com/a/39358741
+
+            var red: CGFloat = 0
+            var green: CGFloat = 0
+            var blue: CGFloat = 0
+            var alpha: CGFloat = 0
+
+            let multiplier = CGFloat(255.9999)
+
+            color.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+
+            return String(
+                format: "#%02X%02X%02X",
+                Int(red * multiplier),
+                Int(green * multiplier),
+                Int(blue * multiplier)
+            )
         }
         
         func isSolutionDisplayRule(name: String) -> MPDisplayRuleType? {
