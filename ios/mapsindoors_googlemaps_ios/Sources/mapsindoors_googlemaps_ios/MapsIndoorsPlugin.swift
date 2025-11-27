@@ -54,7 +54,13 @@ public class MapsIndoorsPlugin: NSObject, FlutterPlugin {
         registrar.register(factory, withId: "<map-view>")
         
         MPLogger.sharedInstance.component = "Flutter/iOS SDK"
-        MPLogger.sharedInstance.componentVersion = "4.5.1"
+        mapsIndoorsMethodChannel.invokeMethod("getFlutterVersion", arguments: nil) { version in
+            MPLogger.sharedInstance.componentVersion = if let version = version as? String {
+                version
+            } else {
+                "unknown"
+            }
+        }
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
