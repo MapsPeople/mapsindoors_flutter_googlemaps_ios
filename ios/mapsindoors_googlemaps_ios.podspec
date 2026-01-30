@@ -21,6 +21,6 @@ Pod::Spec.new do |s|
 
   s.static_framework = true
   
-  s.dependency 'MapsIndoorsCodable', "4.15.6"
-  s.dependency 'MapsIndoorsGoogleMaps', "4.15.6"
+  s.dependency 'MapsIndoorsCodable', "4.16.0"
+  s.dependency 'MapsIndoorsGoogleMaps', "4.16.0"
 end
