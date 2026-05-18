@@ -53,14 +53,15 @@ public class MapsIndoorsPlugin: NSObject, FlutterPlugin {
         let factory = FLNativeViewFactory(messenger: registrar.messenger(), mapsIndoorsData: mapsIndoorsData)
         registrar.register(factory, withId: "<map-view>")
         
-        MPLogger.sharedInstance.component = "Flutter/iOS SDK"
+        //TODO: iOS has changed this approach in 4.17.0, but with no way to set these values. FIX ASAP
+        /*MPLogger.sharedInstance.component = "Flutter/iOS SDK"
         mapsIndoorsMethodChannel.invokeMethod("getFlutterVersion", arguments: nil) { version in
             MPLogger.sharedInstance.componentVersion = if let version = version as? String {
                 version
             } else {
                 "unknown"
             }
-        }
+        }*/
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
