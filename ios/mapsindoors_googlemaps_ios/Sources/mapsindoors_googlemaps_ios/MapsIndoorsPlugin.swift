@@ -31,12 +31,15 @@ public class MapsIndoorsPlugin: NSObject, FlutterPlugin {
         mapsIndoorsListenerChannel = FlutterMethodChannel(name: "MapsIndoorsListenerChannel", binaryMessenger: registrar.messenger())
         let utilMethodChannel = FlutterMethodChannel(name: "UtilMethodChannel", binaryMessenger: registrar.messenger())
         let locationMethodChannel = FlutterMethodChannel(name: "LocationMethodChannel", binaryMessenger: registrar.messenger())
+        let dataSetCacheMethodChannel = FlutterMethodChannel(name: "DataSetCacheMethodChannel", binaryMessenger: registrar.messenger())
 
         mapsIndoorsData.mapControlMethodChannel = mapControlMethodChannel
         mapsIndoorsData.mapsIndoorsMethodChannel = mapsIndoorsMethodChannel
         mapsIndoorsData.directionsRendererMethodChannel = directionsRendererListenerMethodChannel
         mapsIndoorsData.mapControlFloorSelector = mapControlFloorSelectorChannel
+        mapsIndoorsData.dataSetCacheMethodChannel = dataSetCacheMethodChannel
 
+        registrar.addMethodCallDelegate(instance, channel: dataSetCacheMethodChannel)
         registrar.addMethodCallDelegate(instance, channel: directionsRendererListenerMethodChannel!)
         registrar.addMethodCallDelegate(instance, channel: directionsServiceMethodChannel)
         registrar.addMethodCallDelegate(instance, channel: displayRuleMethodChannel)
@@ -52,21 +55,15 @@ public class MapsIndoorsPlugin: NSObject, FlutterPlugin {
                 
         let factory = FLNativeViewFactory(messenger: registrar.messenger(), mapsIndoorsData: mapsIndoorsData)
         registrar.register(factory, withId: "<map-view>")
-        
-        //TODO: iOS has changed this approach in 4.17.0, but with no way to set these values. FIX ASAP
-        /*MPLogger.sharedInstance.component = "Flutter/iOS SDK"
-        mapsIndoorsMethodChannel.invokeMethod("getFlutterVersion", arguments: nil) { version in
-            MPLogger.sharedInstance.componentVersion = if let version = version as? String {
-                version
-            } else {
-                "unknown"
-            }
-        }*/
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         let arguments = call.arguments as? [String: Any]
-        if let method = DirectionsRendererMethodChannel.Methods(rawValue: call.method)
+        if let method = DataSetCacheMethodChannel.Methods(rawValue: call.method)
+        {
+            method.call(arguments: arguments, mapsIndoorsData: MapsIndoorsPlugin.mapsIndoorsData, result: result)
+        }
+        else if let method = DirectionsRendererMethodChannel.Methods(rawValue: call.method)
         {
             method.call(arguments: arguments, mapsIndoorsData: MapsIndoorsPlugin.mapsIndoorsData, result: result)
         }

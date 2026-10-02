@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'mapsindoors_googlemaps_ios'
-  s.version          = '4.7.3'
+  s.version          = '4.8.0'
   s.summary          = 'Mapsindoors flutter plugin'
   s.homepage         = 'http://mapspeople.com'
   s.license          = { file: '../LICENSE' }
@@ -12,8 +12,8 @@ Pod::Spec.new do |s|
   s.source           = { path: '.' }
   s.source_files = 'mapsindoors_googlemaps_ios/Sources/mapsindoors_googlemaps_ios/**/*'
   s.dependency 'Flutter'
-  s.platform = :ios, '15.0'
-  s.ios.deployment_target = "15.0"
+  s.platform = :ios, '16.0'
+  s.ios.deployment_target = "16.0"
 
   # Flutter.framework does not contain a i386 slice.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
@@ -21,6 +21,6 @@ Pod::Spec.new do |s|
 
   s.static_framework = true
   
-  s.dependency 'MapsIndoorsCodable', "4.17.3"
-  s.dependency 'MapsIndoorsGoogleMaps', "4.17.3"
+  s.dependency 'MapsIndoorsCodable', "4.21.0"
+  s.dependency 'MapsIndoorsGoogleMaps', "4.21.0"
 end

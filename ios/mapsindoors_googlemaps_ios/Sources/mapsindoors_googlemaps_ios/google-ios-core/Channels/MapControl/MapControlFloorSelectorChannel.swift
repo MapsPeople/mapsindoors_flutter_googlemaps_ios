@@ -35,6 +35,7 @@ public class MapControlFloorSelectorChannel: NSObject {
                 let floor = try JSONDecoder().decode(MPFloorCodable.self, from: floorJson.data(using: .utf8)!)
                 let floorIndex = floor.floorIndex?.intValue ?? 0
                 mapsIndoorsData.mapControl?.select(floorIndex: floorIndex)
+                result(nil)
             } catch {
                 result(FlutterError(code: "Could not parse floor", message: "FSE_onFloorChanged", details: error.localizedDescription))
             }

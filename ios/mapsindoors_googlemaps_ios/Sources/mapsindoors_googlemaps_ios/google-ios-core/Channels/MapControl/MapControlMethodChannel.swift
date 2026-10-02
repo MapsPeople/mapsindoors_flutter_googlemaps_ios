@@ -335,7 +335,7 @@ public class MapControlMethodChannel: NSObject {
         }
 
         func selectBuilding(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            Task {
+            Task { @MainActor in
                 guard let buildingJson = arguments?["building"] as? String else {
                     result(FlutterError(code: "Could not read building", message: "MPC_selectBuilding", details: nil))
                     return
@@ -366,9 +366,8 @@ public class MapControlMethodChannel: NSObject {
                     return
                 }
 
-                DispatchQueue.main.async {
-                    mapsIndoorsData.mapControl?.select(building: building, behavior: selectionBehavior)
-                }
+                // Reply only once the selection is applied, so a caller that awaits this can read it back.
+                mapsIndoorsData.mapControl?.select(building: building, behavior: selectionBehavior)
                 result(nil)
             }
         }
@@ -415,9 +414,8 @@ public class MapControlMethodChannel: NSObject {
                 return
             }
 
-            DispatchQueue.main.async {
-                mapsIndoorsData.mapControl?.select(location: location, behavior: selectionBehavior)
-            }
+            // Method calls arrive on the main thread, so select synchronously and reply after it.
+            mapsIndoorsData.mapControl?.select(location: location, behavior: selectionBehavior)
             result(nil)
         }
 
@@ -447,10 +445,7 @@ public class MapControlMethodChannel: NSObject {
                 return
             }
 
-            DispatchQueue.main.async {
-                mapsIndoorsData.mapControl?.select(location: location, behavior: selectionBehavior)
-            }
-
+            mapsIndoorsData.mapControl?.select(location: location, behavior: selectionBehavior)
             result(nil)
         }
 
@@ -465,7 +460,7 @@ public class MapControlMethodChannel: NSObject {
                 return
             }
 
-            Task {
+            Task { @MainActor in
                 var venueId: String?
                 do {
                     if let json = try JSONSerialization.jsonObject(with: Data(venueJson.utf8), options: []) as? [String: Any] {
@@ -486,11 +481,10 @@ public class MapControlMethodChannel: NSObject {
                     return
                 }
 
-                DispatchQueue.main.async {
-                    mapsIndoorsData.mapControl?.select(venue: venue, behavior: selectionBehavior)
-                }
+                // Reply only once the selection is applied, so a caller that awaits this can read it back.
+                mapsIndoorsData.mapControl?.select(venue: venue, behavior: selectionBehavior)
+                result(nil)
             }
-            result(nil)
         }
 
         func setFilter(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
@@ -784,12 +778,13 @@ public class MapControlMethodChannel: NSObject {
 
             let locationsFilter = MPFilter()
             locationsFilter.locations = locationIds
-            Task {
+            // On the main actor, because the SDK traps when MapControl is used from any other thread.
+            Task { @MainActor in
                 let locations = await MPMapsIndoors.shared.locationsWith(query: MPQuery(), filter: locationsFilter)
 
                 mapsIndoorsData.mapControl?.setHighlight(locations: locations, behavior: highlightBehavior)
+                result(nil)
             }
-            result(nil)
         }
 
         func getBuildingSelectionMode(arguments _: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {

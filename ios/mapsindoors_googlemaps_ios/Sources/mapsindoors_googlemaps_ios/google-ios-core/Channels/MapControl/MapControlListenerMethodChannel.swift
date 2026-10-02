@@ -63,6 +63,7 @@ public class MapControlListenerMethodChannel: NSObject {
             }
             
             mapsIndoorsData.mapControlListenerDelegate?.respondToCameraEvents = setupListener
+            result(nil)
         }
         
         func floorUpdateListener(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult, methodChannel: FlutterMethodChannel) {
@@ -72,6 +73,7 @@ public class MapControlListenerMethodChannel: NSObject {
             }
             
             mapsIndoorsData.mapControlListenerDelegate?.respondToDidChangeFloorIndex = setupListener
+            result(nil)
         }
         
         func buildingFoundAtCameraTargetListener(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult, methodChannel: FlutterMethodChannel) {
@@ -81,6 +83,7 @@ public class MapControlListenerMethodChannel: NSObject {
             }
             
             mapsIndoorsData.mapControlListenerDelegate?.respondToDidChangeBuilding = setupListener
+            result(nil)
         }
         
         func venueFoundAtCameraTargetListener(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult, methodChannel: FlutterMethodChannel) {
@@ -90,6 +93,7 @@ public class MapControlListenerMethodChannel: NSObject {
             }
             
             mapsIndoorsData.mapControlListenerDelegate?.respondToDidChangeVenue = setupListener
+            result(nil)
         }
         
         func locationClusterClickListener(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult, methodChannel: FlutterMethodChannel) {
@@ -99,7 +103,7 @@ public class MapControlListenerMethodChannel: NSObject {
             }
             
             //TODO: Not implemented
-            //result(FlutterError(code: "Not implemented on v4", message: nil, details: nil))
+            result(nil)
         }
         
         func locationSelectedListener(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult, methodChannel: FlutterMethodChannel) {
@@ -112,6 +116,7 @@ public class MapControlListenerMethodChannel: NSObject {
             
             mapsIndoorsData.mapControlListenerDelegate?.respondToDidChangeLocation = setupListener
             mapsIndoorsData.mapControlListenerDelegate?.consumeChangeLocation = consumeEvent
+            result(nil)
         }
         
         func mapClickListener(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult, methodChannel: FlutterMethodChannel) {
@@ -124,6 +129,7 @@ public class MapControlListenerMethodChannel: NSObject {
             
             mapsIndoorsData.mapControlListenerDelegate?.respondToTap = setupListener
             mapsIndoorsData.mapControlListenerDelegate?.consumeTap = consumeEvent
+            result(nil)
         }
         
         func markerClickListener(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult, methodChannel: FlutterMethodChannel) {
@@ -136,6 +142,7 @@ public class MapControlListenerMethodChannel: NSObject {
             
             mapsIndoorsData.mapControlListenerDelegate?.respondToTapIcon = setupListener
             mapsIndoorsData.mapControlListenerDelegate?.consumeTapIcon = consumeEvent
+            result(nil)
         }
         
         func markerInfoWindowClickListener(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult, methodChannel: FlutterMethodChannel) {
@@ -145,6 +152,7 @@ public class MapControlListenerMethodChannel: NSObject {
             }
             
             mapsIndoorsData.mapControlListenerDelegate?.respondToDidTapInfoWindow = setupListener
+            result(nil)
         }
         
         func markerInfoWindowCloseListener(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult, methodChannel: FlutterMethodChannel) {
@@ -154,7 +162,7 @@ public class MapControlListenerMethodChannel: NSObject {
             }
             
             //TODO: Not implemented
-            //result(FlutterError(code: "Not implemented on v4", message: nil, details: nil))
+            result(nil)
         }
         
         func willUpdateLocationsOnMap(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult, methodChannel: FlutterMethodChannel) {
@@ -164,7 +172,7 @@ public class MapControlListenerMethodChannel: NSObject {
             }
             
             //TODO: Not implemented
-            //result(FlutterError(code: "Not implemented on v4", message: nil, details: nil))
+            result(nil)
         }
     }
 }

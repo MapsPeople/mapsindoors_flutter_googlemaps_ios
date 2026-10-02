@@ -1166,8 +1166,9 @@ public class DisplayRuleMethodChannel: NSObject {
                 mapsIndoorsData.mapControl?.refresh()
             }
             
+            // On the main queue, because the SDK traps when MapControl is used from any other thread.
             if let refreshTimerWorkItem {
-                DispatchQueue.global().asyncAfter(deadline: .now() + 0.5, execute: refreshTimerWorkItem)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: refreshTimerWorkItem)
             }
         }
 

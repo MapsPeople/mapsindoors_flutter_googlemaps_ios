@@ -96,6 +96,14 @@ public class MapsIndoorsMethodChannel: NSObject {
             runner(arguments, mapsIndoorsData, result)
         }
 
+        /// Names this plugin as the component behind the MapsIndoors Insights session, so Flutter apps are told apart from native ones in the rollups.
+        ///
+        /// iOS reads these values when a log package is assembled for upload, rather than snapshotting them as the session starts, so there is no ordering constraint against `load` on this platform. It is set right before `load` anyway, so that both platforms follow one path and the attribution is in place from the first session either way - on Android that ordering is load-bearing. The version is a compile-time constant sent from Dart.
+        private func setFlutterComponent(arguments: [String: Any]?) {
+            MPLogger.sharedInstance.component = "Flutter/iOS SDK"
+            MPLogger.sharedInstance.componentVersion = arguments?["pluginVersion"] as? String ?? "unknown"
+        }
+
         func initialize(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
             guard let args = arguments else {
                 result(FlutterError(code: "Initialized called without arguments", message: "MIN_initialize", details: nil))
@@ -106,6 +114,8 @@ public class MapsIndoorsMethodChannel: NSObject {
                 result(FlutterError(code: "Could not initialise MapsIndoors", message: "MIN_initialize", details: nil))
                 return
             }
+
+            setFlutterComponent(arguments: arguments)
 
             Task {
                 do {
@@ -180,6 +190,9 @@ public class MapsIndoorsMethodChannel: NSObject {
 
         func destroy(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
             MPMapsIndoors.shared.shutdown()
+            DirectionsRendererMethodChannel.clearOptionsCache()
+            mapsIndoorsData.clearBaseMapCacheState()
+            result(nil)
         }
 
         func disableEventLogging(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
@@ -319,7 +332,8 @@ public class MapsIndoorsMethodChannel: NSObject {
         }
 
         func getMapStyles(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult) {
-            Task {
+            // On the main actor, because the SDK traps when MapControl's currentVenue is read from any other thread.
+            Task { @MainActor in
                 guard let defaultVenue = await MPMapsIndoors.shared.venues().first else {
                     result(FlutterError(code: "Could not get default venue", message: "MIN_getMapStyles", details: nil))
                     return
@@ -498,6 +512,8 @@ public class MapsIndoorsMethodChannel: NSObject {
                 result(FlutterError(code: "Could not read arguments", message: Methods.MIN_loadWithVenues.rawValue, details: nil))
                 return
             }
+
+            setFlutterComponent(arguments: arguments)
 
             do {
                 let venueIds = try JSONDecoder().decode([String].self, from: Data(venueIdsJSON.utf8))

@@ -42,6 +42,23 @@ public class MapsIndoorsData: NSObject {
 
     var mapControlFloorSelector: FlutterMethodChannel?
 
+    var dataSetCacheMethodChannel: FlutterMethodChannel?
+
+    /// Whether `enableBaseMapCaching` has been called.
+    ///
+    /// Android infers this from having registered a provider, but iOS cannot: the map provider registers one on init, so a provider always exists and a sync that was never enabled would otherwise find nothing flagged and report plain success. Tracking it here keeps the 9001 contract identical on both platforms.
+    var baseMapCachingEnabled = false
+
+    /// Whether a base-map tile download is in flight, so a second overlapping sync can be refused the way Android refuses it.
+    var baseMapCacheSyncInProgress = false
+
+    /// Forgets that base-map caching was enabled, so a `synchronizeBaseMapTiles` after `destroy` reports 9001 instead of proceeding. Android does the equivalent in `DataSetCacheHandler.terminate()`.
+    ///
+    /// A download already in flight is deliberately left running: iOS exposes no way to cancel base-map tile caching, unlike Android's `MPIMapProviderBaseMapCache.terminate()`. Its own flag is therefore cleared when it settles rather than here, because clearing it now would let a second sync start alongside the first.
+    func clearBaseMapCacheState() {
+        baseMapCachingEnabled = false
+    }
+
     var positionProvider: FlutterPositionProvider?
 
     var directionsRenderer: MPDirectionsRenderer?

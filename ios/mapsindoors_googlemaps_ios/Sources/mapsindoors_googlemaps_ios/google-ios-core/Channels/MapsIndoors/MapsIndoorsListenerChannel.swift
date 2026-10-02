@@ -43,6 +43,7 @@ public class MapsIndoorsListenerChannel: NSObject {
             } else {
                 mapsIndoorsData.delegate = mapsIndoorsData.delegate.filter { !($0 is ReadyDelegate) }
             }
+            result(nil)
         }
 
         func onPositionUpdate(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult, methodChannel _: FlutterMethodChannel) {
@@ -55,10 +56,12 @@ public class MapsIndoorsListenerChannel: NSObject {
             if positionResult != nil {
                 mapsIndoorsData.positionProvider?.setLatestPosition(positionResult: positionResult!)
             }
+            result(nil)
         }
 
         func onVenueStatusListener(arguments: [String: Any]?, mapsIndoorsData: MapsIndoorsData, result: @escaping FlutterResult, methodChannel: FlutterMethodChannel) {
             // No such thing exists on iOS at time of implementation (iOS SDK 4.5.0)
+            result(nil)
         }
     }
 

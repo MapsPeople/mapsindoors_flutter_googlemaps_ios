@@ -144,26 +144,35 @@ public class UtilMethodChannel: NSObject {
                 return
             }
 
-            guard let geom = try? JSONDecoder().decode(MPGeometry.self, from: Data(geo.utf8)) as MPGeometry else {
+            // Decoding MPGeometry gives back the base class, never a subclass, so decode the GeoJSON
+            // and build the concrete geometry, as polygonDistToClosestEdge does.
+            guard let dto = try? JSONDecoder().decode(GeoJSONGeometry.self, from: Data(geo.utf8)) else {
                 result(FlutterError(code: "Could not parse geometry", message: "UTL_geometryIsInside", details: nil))
                 return
             }
 
-            // Determine of the point is inside the polygon
-            if geom is MPPolygonGeometry {
-                let poly = geom.mp_polygon
-                result(poly?.containsCoordinate(it.coordinate))
-            } else if geom is MPMultiPolygonGeometry {
-                let multiPoly = geom.mp_multiPolygon
-                result(multiPoly?.containsCoordinate(it.coordinate))
-            } else {
-                result(FlutterError(code: "The given geometry needs to be a polygon", message: "UTL_geometryIsInside", details: nil))
+            switch dto.type {
+            case GeoJSONGeometry.point:
+                // A point contains only its own coordinate, which is what MPPoint.isInside checks on Android.
+                guard let geomPoint = try? JSONDecoder().decode(MPPoint.self, from: Data(geo.utf8)) else {
+                    result(FlutterError(code: "Could not parse geometry", message: "UTL_geometryIsInside", details: nil))
+                    return
+                }
+                result(geomPoint.coordinate.latitude == it.coordinate.latitude && geomPoint.coordinate.longitude == it.coordinate.longitude)
+            case GeoJSONGeometry.polygon, GeoJSONGeometry.multiPolygon:
+                guard let contained = dto.contains(it) else {
+                    result(FlutterError(code: "Could not parse geometry", message: "UTL_geometryIsInside", details: nil))
+                    return
+                }
+                result(contained)
+            default:
+                result(FlutterError(code: "Unsupported geometry type: \(dto.type)", message: "UTL_geometryIsInside", details: nil))
             }
         }
 
         func geometryArea(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
             guard let args = arguments else {
-                result(FlutterError(code: "parseMapClientUrl called without arguments", message: "UTL_geometryArea", details: nil))
+                result(FlutterError(code: "geometryArea called without arguments", message: "UTL_geometryArea", details: nil))
                 return
             }
 
@@ -172,19 +181,24 @@ public class UtilMethodChannel: NSObject {
                 return
             }
 
-            let decoder = JSONDecoder()
-            let geoObj = try! decoder.decode(MPGeometry.self, from: Data(geo.utf8))
-
-            if geoObj is MPPoint {
-                result(0)
-                return
-            }
-            if geoObj is MPPolygonGeometry {
-                result(geoObj.mp_polygon?.area)
+            guard let dto = try? JSONDecoder().decode(GeoJSONGeometry.self, from: Data(geo.utf8)) else {
+                result(FlutterError(code: "Could not parse geometry", message: "UTL_geometryArea", details: nil))
                 return
             }
 
-            result(nil)
+            // Dart answers MPPoint.area itself, so only the areal types reach this channel.
+            guard dto.type == GeoJSONGeometry.polygon || dto.type == GeoJSONGeometry.multiPolygon else {
+                result(FlutterError(code: "Unsupported geometry type: \(dto.type)", message: "UTL_geometryArea", details: nil))
+                return
+            }
+
+            guard let polygons = dto.memberPolygons() else {
+                result(FlutterError(code: "Could not parse geometry", message: "UTL_geometryArea", details: nil))
+                return
+            }
+
+            // A MultiPolygon's area is the sum of its members' areas, as Android computes it.
+            result(polygons.reduce(0.0) { $0 + $1.area })
         }
 
         func polygonDistToClosestEdge(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
@@ -203,36 +217,66 @@ public class UtilMethodChannel: NSObject {
                 return
             }
 
+            // Decoding MPGeometry gives back a base MPGeometry, never a subclass, and
+            // mp_polygon is an internal NSObject-category property that nothing has set
+            // on a freshly decoded object. So decode the GeoJSON rings ourselves and
+            // build the concrete geometry, then use the SDK's own edge-distance method
+            // (the same one the Android SDK exposes) rather than re-deriving it here.
             let decoder = JSONDecoder()
-            let geoObj = try! decoder.decode(MPGeometry.self, from: Data(geo.utf8))
-            if !(geoObj is MPPolygonGeometry) {
-                result(FlutterError(code: "Could not read polygon data", message: "UTL_polygonDistToClosestEdge", details: nil))
+
+            guard let point = try? decoder.decode(MPPoint.self, from: Data(pointJson.utf8)) else {
+                result(FlutterError(code: "Could not read point data", message: "UTL_polygonDistToClosestEdge", details: nil))
+                return
             }
 
-            let point = try! decoder.decode(MPPoint.self, from: Data(pointJson.utf8))
-            let geoPoint = CLLocationCoordinate2D(latitude: point.latitude, longitude: point.longitude)
+            guard let dto = try? decoder.decode(GeoJSONGeometry.self, from: Data(geo.utf8)) else {
+                result(FlutterError(code: "Could not read polygon data", message: "UTL_polygonDistToClosestEdge", details: nil))
+                return
+            }
 
-            if geoObj is MPPolygonGeometry {
-                guard let outerRing = (geoObj.mp_polygon.coordinates.first?.map { CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude) }) else {
+            let polygons: [[[MPPoint]]]
+            switch dto.type {
+            case GeoJSONGeometry.polygon:
+                guard let rings = dto.polygonRings else {
                     result(FlutterError(code: "Could not read polygon data", message: "UTL_polygonDistToClosestEdge", details: nil))
                     return
                 }
-
-                var shortestDistance = Double.greatestFiniteMagnitude
-                for i in 1 ..< outerRing.count {
-                    let p1 = outerRing[i - 1]
-                    let p2 = outerRing[i]
-
-                    let distanceToLine = MPGeometryUtils.distancePointToLine(point: geoPoint, lineStart: p1, lineEnd: p2)
-                    if distanceToLine < shortestDistance {
-                        shortestDistance = distanceToLine
-                    }
+                polygons = [rings]
+            case GeoJSONGeometry.multiPolygon:
+                guard let multi = dto.multiPolygonRings else {
+                    result(FlutterError(code: "Could not read polygon data", message: "UTL_polygonDistToClosestEdge", details: nil))
+                    return
                 }
-
-                result(shortestDistance)
+                polygons = multi
+            default:
+                result(FlutterError(code: "Unsupported geometry type: \(dto.type)", message: "UTL_polygonDistToClosestEdge", details: nil))
                 return
             }
-            result(nil)
+
+            // A MultiPolygon's distance is the closest of its member polygons. The SDK
+            // reports -1 when the point is outside a polygon's bounding box, so skip
+            // those and only fall back to -1 when every member reports it.
+            var shortestDistance = -1.0
+            var constructedAny = false
+            for rings in polygons {
+                guard let polygon = MPPolygonGeometry(coordinates: rings) else { continue }
+                constructedAny = true
+                let d = polygon.squaredDistanceToClosestEdge(point)
+                if d < 0 { continue }
+                if shortestDistance < 0 || d < shortestDistance {
+                    shortestDistance = d
+                }
+            }
+
+            // -1 already means "the point is outside the bounding box", so it cannot also stand for
+            // "nothing could be built from this input" - the caller would have no way to tell the two
+            // apart. Android throws on the same input and replies with an error; match it.
+            guard constructedAny else {
+                result(FlutterError(code: "Could not read polygon data", message: "UTL_polygonDistToClosestEdge", details: nil))
+                return
+            }
+
+            result(shortestDistance)
         }
 
         func parseMapClientUrl(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
@@ -252,7 +296,6 @@ public class UtilMethodChannel: NSObject {
             }
 
             result(MPMapsIndoors.shared.solution?.getMapClientUrlFor(venueId: venueId, locationId: locationId))
-            result(nil)
         }
 
         func setCollisionHandling(arguments: [String: Any]?, mapsIndoorsData _: MapsIndoorsData, result: @escaping FlutterResult) {
@@ -385,6 +428,103 @@ public class UtilMethodChannel: NSObject {
 
             MPMapsIndoors.shared.solution?.config.automatedZoomLimit = limit
             result(nil)
+        }
+    }
+}
+
+/// Minimal decoder for the GeoJSON geometry payloads the Dart layer sends:
+/// `{"type": "Polygon" | "MultiPolygon", "coordinates": ..., "bbox": [...]}`. A `Point` decodes its
+/// `type` only; its coordinates are read with `MPPoint` itself.
+/// Coordinate pairs are `[longitude, latitude]`, per GeoJSON and the Dart
+/// `MPGeometry` models. Needed because `MPGeometry` itself decodes to the base
+/// class, so `JSONDecoder` can never hand back a concrete geometry subclass.
+private struct GeoJSONGeometry: Decodable {
+    static let point = "Point"
+    static let polygon = "Polygon"
+    static let multiPolygon = "MultiPolygon"
+
+    let type: String
+    /// Rings of a single polygon, when `type` is `Polygon`.
+    let polygonRings: [[MPPoint]]?
+    /// Rings per member polygon, when `type` is `MultiPolygon`.
+    let multiPolygonRings: [[[MPPoint]]]?
+
+    private enum CodingKeys: String, CodingKey {
+        case type, coordinates
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        type = try container.decode(String.self, forKey: .type)
+        switch type {
+        case Self.polygon:
+            polygonRings = try container
+                .decode([[[Double]]].self, forKey: .coordinates)
+                .map(Self.points)
+            multiPolygonRings = nil
+        case Self.multiPolygon:
+            polygonRings = nil
+            multiPolygonRings = try container
+                .decode([[[[Double]]]].self, forKey: .coordinates)
+                .map { try $0.map(Self.points) }
+        default:
+            polygonRings = nil
+            multiPolygonRings = nil
+        }
+    }
+
+    /// Rings per member polygon: one member for a `Polygon`, one per member for a `MultiPolygon`,
+    /// nil for any other type.
+    private var memberRings: [[[MPPoint]]]? {
+        polygonRings.map { [$0] } ?? multiPolygonRings
+    }
+
+    /// Builds one `MPPolygonGeometry` per member polygon. The SDK has no public initializer for
+    /// `MPMultiPolygonGeometry`, so a MultiPolygon has to be handled through its members. Returns nil
+    /// for any other type, or when a member cannot be built, since leaving that member out would give
+    /// an answer for a geometry the caller never sent.
+    func memberPolygons() -> [MPPolygonGeometry]? {
+        guard let members = memberRings else { return nil }
+        var polygons: [MPPolygonGeometry] = []
+        for rings in members {
+            guard let polygon = MPPolygonGeometry(coordinates: rings) else { return nil }
+            polygons.append(polygon)
+        }
+        return polygons
+    }
+
+    /// Whether `point` is inside the geometry, or nil when it is not a polygon or a ring cannot be built.
+    ///
+    /// Each ring is tested as a polygon of its own: inside a member means inside its outer ring and in none of its holes, and inside the geometry means inside any member. That is how Android's `MPPolygonGeometry` and `MPMultiPolygonGeometry.isInside` answer, and it does not rely on the SDK's own hole handling, which changed in 4.21.0: up to 4.20.0 `containsCoordinate` counted a coordinate in a hole as inside whatever `ignorePolygonHoles` said.
+    func contains(_ point: MPPoint) -> Bool? {
+        guard let members = memberRings else { return nil }
+        var inside = false
+        for rings in members {
+            var ringPolygons: [MPPolygonGeometry] = []
+            for ring in rings {
+                guard let ringPolygon = MPPolygonGeometry(coordinates: [ring]) else { return nil }
+                ringPolygons.append(ringPolygon)
+            }
+            guard let outer = ringPolygons.first else { return nil }
+            if outer.containsCoordinate(point.coordinate), !ringPolygons.dropFirst().contains(where: { $0.containsCoordinate(point.coordinate) }) {
+                inside = true
+            }
+        }
+        return inside
+    }
+
+    /// Throws rather than dropping a short coordinate pair. Skipping one silently turns a truncated
+    /// ring into a shorter valid-looking one, and the caller then gets a distance to a polygon it
+    /// never sent instead of being told its input was malformed.
+    private static func points(_ ring: [[Double]]) throws -> [MPPoint] {
+        try ring.map {
+            guard $0.count >= 2 else {
+                throw DecodingError.dataCorrupted(
+                    DecodingError.Context(
+                        codingPath: [CodingKeys.coordinates],
+                        debugDescription: "A coordinate pair needs a longitude and a latitude, got \($0.count)"))
+            }
+            return MPPoint(latitude: $0[1], longitude: $0[0])
         }
     }
 }
